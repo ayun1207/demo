@@ -9,10 +9,10 @@
 <body>
     <dialog id="entrance" class="entrance" tabindex="-1" autofocus aria-labelledby="entranceTitle" aria-describedby="entranceDescription">
         <div class="entrance-content">
-            <h1 id="entranceTitle">文字(maybe主題)</h1>
-            <p id="entranceDescription">文字敘述</p>
+            <h1 id="entranceTitle">文字</h1>
+            <p id="entranceDescription">文字</p>
             <button id="enterExhibition" class="entrance-enter" type="button">
-                <span class="entrance-prompt">點擊以進入</span>
+                <span class="entrance-prompt">Continue</span>
             </button>
             <p id="entranceMusicHint" class="entrance-hint" hidden>進入後將播放背景音樂，可隨時暫停。</p>
             <button id="enterQuietly" class="entrance-quiet" type="button" hidden>靜音進入</button>
@@ -25,7 +25,7 @@
         <button id="menuToggle" class="menu-toggle" type="button" aria-label="開啟導覽選單" aria-controls="siteMenu" aria-expanded="false" onclick="openMenu()">
             <span></span><span></span><span></span>
         </button>
-        <span class="current-page-label" id="currentPageLabel">作品展示</span>
+        <span class="current-page-label" id="currentPageLabel">節氣序章</span>
         <button id="musicToggle" class="music-toggle" type="button" aria-label="播放背景音樂" hidden>音樂 / 播放</button>
         <span id="musicStatus" class="music-status" role="status"></span>
     </header>
@@ -38,17 +38,75 @@
             </div>
             
             <nav class="menu-navigation" aria-label="網站導覽">
-                <button class="nav-btn active" type="button" data-page="gallery" aria-current="page" onclick="switchPage('gallery')"><span class="menu-number">01</span>作品展示<span class="menu-arrow" aria-hidden="true">↗</span></button>
-                <button class="nav-btn" type="button" data-page="text" onclick="switchPage('text')"><span class="menu-number">02</span>繪師資訊<span class="menu-arrow" aria-hidden="true">↗</span></button>
-                <button class="nav-btn" type="button" data-page="planning" onclick="switchPage('planning')"><span class="menu-number">03</span>籌劃細節<span class="menu-arrow" aria-hidden="true">↗</span></button>
+                <button class="nav-btn active" type="button" data-page="intro" aria-current="page" onclick="switchPage('intro')"><span class="menu-number">01</span>節氣序章<span class="menu-arrow" aria-hidden="true">↗</span></button>
+                <button class="nav-btn" type="button" data-page="gallery" onclick="switchPage('gallery')"><span class="menu-number">02</span>作品展示<span class="menu-arrow" aria-hidden="true">↗</span></button>
+                <button class="nav-btn" type="button" data-page="text" onclick="switchPage('text')"><span class="menu-number">03</span>繪師資訊<span class="menu-arrow" aria-hidden="true">↗</span></button>
+                <button class="nav-btn" type="button" data-page="planning" onclick="switchPage('planning')"><span class="menu-number">04</span>籌劃細節<span class="menu-arrow" aria-hidden="true">↗</span></button>
             </nav>
             
         </div>
     </dialog>
 
     <main>
+        <!-- 節氣序章：Splash 之後先以文字建立企劃的世界觀，再進入作品展示。 -->
+        <section id="intro-page" class="page-content intro-page active" aria-labelledby="introTitle">
+            <div class="intro-layout">
+                <div class="intro-copy">
+                    <p class="intro-eyebrow">01 / PROLOGUE · 二十四節氣</p>
+                    <h1 id="introTitle">文字</h1>
+                    <div class="intro-rule" aria-hidden="true"></div>
+                    <p class="intro-lead">
+                        文字
+                    </p>
+                    <p class="intro-description">
+                        
+                    </p>
+                    <button class="intro-enter-gallery" type="button" onclick="switchPage('gallery')">
+                        <span>委託作品</span>
+                        <span aria-hidden="true">→</span>
+                    </button>
+                </div>
+
+                <div class="solar-cycle" aria-label="二十四節氣循環圖">
+                    <div class="solar-ring" aria-hidden="true"></div>
+                    <div class="solar-axis solar-axis-vertical" aria-hidden="true"></div>
+                    <div class="solar-axis solar-axis-horizontal" aria-hidden="true"></div>
+
+
+                    <span class="solar-term solar-spring" style="--angle:0deg">立春</span>
+                    <span class="solar-term solar-spring" style="--angle:15deg">雨水</span>
+                    <span class="solar-term solar-spring" style="--angle:30deg">驚蟄</span>
+                    <span class="solar-term solar-spring" style="--angle:45deg">春分</span>
+                    <span class="solar-term solar-spring" style="--angle:60deg">清明</span>
+                    <span class="solar-term solar-spring" style="--angle:75deg">穀雨</span>
+                    <span class="solar-term solar-summer" style="--angle:90deg">立夏</span>
+                    <span class="solar-term solar-summer" style="--angle:105deg">小滿</span>
+                    <span class="solar-term solar-summer" style="--angle:120deg">芒種</span>
+                    <span class="solar-term solar-summer" style="--angle:135deg">夏至</span>
+                    <span class="solar-term solar-summer" style="--angle:150deg">小暑</span>
+                    <span class="solar-term solar-summer" style="--angle:165deg">大暑</span>
+                    <span class="solar-term solar-autumn" style="--angle:180deg">立秋</span>
+                    <span class="solar-term solar-autumn" style="--angle:195deg">處暑</span>
+                    <span class="solar-term solar-autumn" style="--angle:210deg">白露</span>
+                    <span class="solar-term solar-autumn" style="--angle:225deg">秋分</span>
+                    <span class="solar-term solar-autumn" style="--angle:240deg">寒露</span>
+                    <span class="solar-term solar-autumn" style="--angle:255deg">霜降</span>
+                    <span class="solar-term solar-winter" style="--angle:270deg">立冬</span>
+                    <span class="solar-term solar-winter" style="--angle:285deg">小雪</span>
+                    <span class="solar-term solar-winter" style="--angle:300deg">大雪</span>
+                    <span class="solar-term solar-winter" style="--angle:315deg">冬至</span>
+                    <span class="solar-term solar-winter" style="--angle:330deg">小寒</span>
+                    <span class="solar-term solar-winter" style="--angle:345deg">大寒</span>
+
+                    <div class="solar-center">
+                        
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- 作品展示頁 -->
-        <section id="gallery-page" class="page-content active">
+        <section id="gallery-page" class="page-content">
             <button class="arrow-btn arrow-prev" type="button" onclick="moveSlide(-1)" aria-label="上一張作品" title="上一張作品">
                 <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
                     <path d="M25 16H7M14 9l-7 7 7 7" />
@@ -263,7 +321,7 @@
         <!-- 繪師資訊：可在這裡補上介紹與連結。 -->
         <section id="text-page" class="page-content info-page" aria-labelledby="artistTitle">
             <div class="text-container">
-                <p class="info-eyebrow">02 / ARTISTS</p>
+                <p class="info-eyebrow">03 / ARTISTS</p>
                 <h1 id="artistTitle">繪師資訊</h1>
                 <h2>特別感謝</h2>
                 <p>繪師</p>
@@ -272,7 +330,7 @@
         </section>
         <section id="planning-page" class="page-content info-page" aria-labelledby="planningTitle">
             <div class="text-container">
-                <p class="info-eyebrow">03 / BEHIND THE SCENES</p>
+                <p class="info-eyebrow">04 / BEHIND THE SCENES</p>
                 <h1 id="planningTitle">籌劃細節</h1>
                 
                 <!-- 可在這裡加入企劃緣起、製作過程與參與名單。 -->

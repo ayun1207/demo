@@ -20,7 +20,7 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    transition: background-color 0.5s ease; /* 換頁時背景顏色平滑漸變 */
+    transition: background-color 0.8s ease; /* 換頁時背景顏色平滑漸變 */
 }
 
 /* 左上角導覽與半透明側欄 */
@@ -222,6 +222,267 @@ main {
     display: flex;
     opacity: 1;
 }
+
+
+/* =========================
+   節氣序章
+========================= */
+.intro-page {
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(32px, 5vw, 76px) clamp(24px, 7vw, 110px) 72px;
+    overflow: hidden;
+}
+
+body.intro-page-active {
+    background-image:
+        radial-gradient(ellipse at 13% 16%, rgba(211, 151, 150, 0.15), transparent 42%),
+        radial-gradient(ellipse at 86% 17%, rgba(137, 167, 119, 0.15), transparent 42%),
+        radial-gradient(ellipse at 17% 88%, rgba(197, 151, 78, 0.13), transparent 44%),
+        radial-gradient(ellipse at 86% 86%, rgba(128, 157, 170, 0.14), transparent 43%),
+        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.34), transparent 60%);
+}
+
+.intro-layout {
+    width: min(1180px, 100%);
+    min-height: min(680px, calc(100vh - 190px));
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(290px, 0.75fr);
+    gap: clamp(48px, 8vw, 120px);
+    align-items: center;
+}
+
+.intro-copy {
+    max-width: 720px;
+}
+
+.intro-eyebrow {
+    margin-bottom: 26px;
+    color: #756951;
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+}
+
+.intro-copy h1 {
+    font-family: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+    font-size: clamp(2.5rem, 5.4vw, 5.1rem);
+    font-weight: 400;
+    line-height: 1.45;
+    letter-spacing: 0.08em;
+    color: #37413d;
+    text-wrap: balance;
+}
+
+.intro-rule {
+    width: min(220px, 34vw);
+    height: 1px;
+    margin: 34px 0;
+    background: linear-gradient(90deg, rgba(117, 105, 81, 0.65), transparent);
+}
+
+.intro-lead,
+.intro-description {
+    max-width: 620px;
+    color: #5f675f;
+    font-size: clamp(0.92rem, 1.25vw, 1.02rem);
+    line-height: 2.15;
+    letter-spacing: 0.055em;
+}
+
+.intro-description {
+    margin-top: 17px;
+    color: #74786f;
+}
+
+.intro-enter-gallery {
+    display: inline-flex;
+    align-items: center;
+    gap: 18px;
+    min-height: 48px;
+    margin-top: 38px;
+    padding: 0 4px 8px;
+    border: 0;
+    border-bottom: 1px solid rgba(117, 105, 81, 0.48);
+    background: transparent;
+    color: #5b5549;
+    font: inherit;
+    font-size: 0.82rem;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+    transition: gap 260ms ease, color 260ms ease, border-color 260ms ease;
+}
+
+.intro-enter-gallery:hover {
+    gap: 26px;
+    color: #303b36;
+    border-color: rgba(48, 59, 54, 0.72);
+}
+
+.intro-enter-gallery:focus-visible {
+    outline: 2px solid #8f7959;
+    outline-offset: 6px;
+}
+
+
+.solar-cycle {
+    position: relative;
+    width: min(470px, 38vw);
+    aspect-ratio: 1;
+    justify-self: end;
+    border-radius: 50%;
+}
+
+.solar-ring {
+    position: absolute;
+    inset: 15%;
+    border: 1px solid rgba(117, 105, 81, 0.24);
+    border-radius: 50%;
+    box-shadow:
+        0 0 0 18px rgba(255, 253, 248, 0.12),
+        inset 0 0 35px rgba(255, 255, 255, 0.22);
+}
+
+.solar-ring::before,
+.solar-ring::after {
+    content: '';
+    position: absolute;
+    inset: 9%;
+    border-radius: 50%;
+    border: 1px solid rgba(117, 105, 81, 0.08);
+}
+
+.solar-ring::after {
+    inset: 24%;
+}
+
+.solar-axis {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(117, 105, 81, 0.16),
+        transparent
+    );
+    transform-origin: center;
+    pointer-events: none;
+}
+
+.solar-axis-vertical {
+    width: 1px;
+    height: 70%;
+    transform: translate(-50%, -50%);
+}
+
+.solar-axis-horizontal {
+    width: 1px;
+    height: 70%;
+    transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.solar-term {
+    --orbit-offset: -190px;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 4.2em;
+    text-align: center;
+
+    font-family: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+    font-size: clamp(0.7rem, 0.95vw, 0.88rem);
+    line-height: 1;
+    letter-spacing: 0.08em;
+    color: #5f675f;
+
+    transform:
+        translate(-50%, -50%)
+        rotate(var(--angle))
+        translateY(var(--orbit-offset))
+        rotate(calc(0deg - var(--angle)));
+
+    transform-origin: center;
+    white-space: nowrap;
+}
+
+.solar-spring,
+.solar-summer,
+.solar-autumn,
+.solar-winter {
+    color: #5f675f;
+}
+
+.solar-center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 34%;
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(117, 105, 81, 0.16);
+    background: rgba(255, 253, 248, 0.46);
+    backdrop-filter: blur(4px);
+    text-align: center;
+}
+
+.solar-center span {
+    font-family: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+    font-size: clamp(1rem, 1.45vw, 1.25rem);
+    letter-spacing: 0.12em;
+    color: #4d554f;
+}
+
+.solar-center small {
+    margin-top: 10px;
+    font-size: clamp(0.42rem, 0.55vw, 0.55rem);
+    letter-spacing: 0.17em;
+    color: #807a6d;
+}
+
+@media (max-width: 768px) {
+    .intro-page {
+        padding: 28px 24px 56px;
+        align-items: flex-start;
+        overflow-y: auto;
+    }
+
+    .intro-layout {
+        min-height: 0;
+        grid-template-columns: 1fr;
+        gap: 42px;
+    }
+
+    .intro-copy h1 {
+        font-size: clamp(2.25rem, 11vw, 3.5rem);
+    }
+
+    .intro-lead br {
+        display: none;
+    }
+
+    .solar-cycle {
+        width: min(390px, 92vw);
+        justify-self: center;
+    }
+
+    .solar-term {
+        font-size: clamp(0.62rem, 2.45vw, 0.76rem);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .intro-enter-gallery {
+        transition: none;
+    }
+}
+
 
 /* 圖片輪換頁面 */
 #gallery-page {
