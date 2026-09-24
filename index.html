@@ -1,18 +1,33 @@
-<!DOCTYPE html> //hello
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>極簡風格展示網站</title>
+    <title>展示網站</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <dialog id="entrance" class="entrance" tabindex="-1" autofocus aria-labelledby="entranceTitle" aria-describedby="entranceDescription">
+        <div class="entrance-content">
+            <h1 id="entranceTitle">文字(maybe主題)</h1>
+            <p id="entranceDescription">文字敘述</p>
+            <button id="enterExhibition" class="entrance-enter" type="button">
+                <span class="entrance-prompt">點擊以進入</span>
+            </button>
+            <p id="entranceMusicHint" class="entrance-hint" hidden>進入後將播放背景音樂，可隨時暫停。</p>
+            <button id="enterQuietly" class="entrance-quiet" type="button" hidden>靜音進入</button>
+        </div>
+    </dialog>
+    <!-- 選定授權音樂後，在 audio 加上 src="audio/background.mp3"。 -->
+    <audio id="backgroundMusic" loop preload="none"></audio>
 
     <header class="site-header">
         <button id="menuToggle" class="menu-toggle" type="button" aria-label="開啟導覽選單" aria-controls="siteMenu" aria-expanded="false" onclick="openMenu()">
             <span></span><span></span><span></span>
         </button>
         <span class="current-page-label" id="currentPageLabel">作品展示</span>
+        <button id="musicToggle" class="music-toggle" type="button" aria-label="播放背景音樂" hidden>音樂 / 播放</button>
+        <span id="musicStatus" class="music-status" role="status"></span>
     </header>
 
     <dialog id="siteMenu" class="site-menu" aria-labelledby="menuTitle">
