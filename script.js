@@ -89,58 +89,92 @@ function displayPage(pageName, targetPage, targetButton) {
 
 async function switchPage(pageName) {
     const targetPage = document.getElementById(`${pageName}-page`);
-    const targetButton = Array.from(document.querySelectorAll('.nav-btn')).find(button => button.dataset.page === pageName);
-    if (!targetPage || !targetButton || isPageSwitching) return;
-    if (reducedMotion.matches || typeof targetPage.animate !== 'function') {
+
+    const targetButton = Array.from(
+        document.querySelectorAll('.nav-btn')
+    ).find(button => button.dataset.page === pageName);
+
+    const currentPage =
+        document.querySelector('.page-content.active');
+
+    if (
+        !targetPage ||
+        !targetButton ||
+        isPageSwitching ||
+        currentPage === targetPage
+    ) {
+        return;
+    }
+
+    // 使用者有開啟「減少動畫」時直接切換
+    if (
+        reducedMotion.matches ||
+        typeof currentPage.animate !== 'function'
+    ) {
         displayPage(pageName, targetPage, targetButton);
         return;
     }
 
     isPageSwitching = true;
-    // 羽化光幕沿用目前背景色，讓中心擴散自然融入畫面。
-    const cover = document.createElement('dialog');
-    cover.className = 'page-transition';
-    cover.setAttribute('aria-label', '正在切換頁面');
-    cover.tabIndex = -1;
-    const wash = document.createElement('div');
-    wash.className = 'page-transition-wash';
-    wash.style.setProperty('--transition-color', getComputedStyle(document.body).backgroundColor);
-    wash.setAttribute('aria-hidden', 'true');
-    cover.append(wash);
-    document.body.append(cover);
-    let animation;
-    let displayed = false;
-    const finishForReducedMotion = () => {
-        if (reducedMotion.matches) animation?.finish();
-    };
-    cover.addEventListener('cancel', event => event.preventDefault());
-    reducedMotion.addEventListener('change', finishForReducedMotion);
+
     try {
-        cover.showModal();
-        animation = wash.animate([
-            { transform: 'translate(-50%, -50%) scale(0.12)', opacity: 0 },
-            { transform: 'translate(-50%, -50%) scale(0.6)', opacity: 0.75, offset: 0.65 },
-            { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 }
-        ], { duration: 1100, easing: 'ease-in-out', fill: 'forwards' });
-        await animation.finished;
+        // 舊頁：快速淡出 + 微微往上
+        const leaveAnimation = currentPage.animate(
+            [
+                {
+                    opacity: 1,
+                    transform: 'translateY(0px) scale(1)'
+                },
+                {
+                    opacity: 0,
+                    transform: 'translateY(-8px) scale(0.995)'
+                }
+            ],
+            {
+                duration: 200,
+                easing: 'ease-in',
+                fill: 'forwards'
+            }
+        );
+
+        await leaveAnimation.finished;
+
+        // 真正切換頁面
         displayPage(pageName, targetPage, targetButton);
-        displayed = true;
-        animation.cancel();
-        animation = wash.animate([{ opacity: 1 }, { opacity: 0 }], {
-            duration: reducedMotion.matches ? 0 : 900,
-            easing: 'ease-in-out', fill: 'forwards'
-        });
-        await animation.finished;
+
+        leaveAnimation.cancel();
+
+        // 新頁：淡入 + 微微從下方浮上來
+        const enterAnimation = targetPage.animate(
+            [
+                {
+                    opacity: 0,
+                    transform: 'translateY(10px) scale(0.995)'
+                },
+                {
+                    opacity: 1,
+                    transform: 'translateY(0px) scale(1)'
+                }
+            ],
+            {
+                duration: 350,
+                easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+                fill: 'both'
+            }
+        );
+
+        await enterAnimation.finished;
+
+        enterAnimation.cancel();
+
     } catch {
-        // 動畫不可用或被中斷時仍完成導覽，不讓過場阻擋內容。
-        if (!displayed) displayPage(pageName, targetPage, targetButton);
+        displayPage(pageName, targetPage, targetButton);
     } finally {
-        animation?.cancel();
-        reducedMotion.removeEventListener('change', finishForReducedMotion);
-        if (cover.open) cover.close();
-        cover.remove();
         isPageSwitching = false;
-        menuToggle.focus({ preventScroll: true });
+
+        menuToggle.focus({
+            preventScroll: true
+        });
     }
 }
 
