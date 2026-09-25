@@ -258,10 +258,14 @@ body.intro-page-active {
 }
 
 .intro-eyebrow {
-    margin-bottom: 26px;
+    position: absolute;
+    top: 18px;
+    right: clamp(24px, 7vw, 110px);
+    z-index: 2;
     color: #756951;
     font-size: 0.68rem;
     letter-spacing: 0.22em;
+    white-space: nowrap;
 }
 
 .intro-copy h1 {
@@ -296,6 +300,8 @@ body.intro-page-active {
 }
 
 .intro-enter-gallery {
+    transform: scale(1);
+    transform-origin: left center;
     display: inline-flex;
     align-items: center;
     gap: 18px;
@@ -310,16 +316,19 @@ body.intro-page-active {
     font-size: 0.82rem;
     letter-spacing: 0.14em;
     cursor: pointer;
-    transition: gap 260ms ease, color 260ms ease, border-color 260ms ease;
+    transition: transform 450ms cubic-bezier(0.16, 1, 0.3, 1),
+        gap 260ms ease, color 260ms ease, border-color 260ms ease;
 }
 
 .intro-enter-gallery:hover {
+    transform: scale(1.1);
     gap: 26px;
     color: #303b36;
     border-color: rgba(48, 59, 54, 0.72);
 }
 
 .intro-enter-gallery:focus-visible {
+    transform: scale(1.1);
     outline: 2px solid #8f7959;
     outline-offset: 6px;
 }
@@ -459,6 +468,15 @@ body.intro-page-active {
         gap: 42px;
     }
 
+    .intro-eyebrow {
+        top: 10px;
+        right: 24px;
+        padding: 5px 7px;
+        background: rgba(243, 239, 229, 0.72);
+        -webkit-backdrop-filter: blur(4px);
+        backdrop-filter: blur(4px);
+    }
+
     .intro-copy h1 {
         font-size: clamp(2.25rem, 11vw, 3.5rem);
     }
@@ -480,6 +498,7 @@ body.intro-page-active {
 @media (prefers-reduced-motion: reduce) {
     .intro-enter-gallery {
         transition: none;
+        transform: none;
     }
 }
 
@@ -494,8 +513,8 @@ body.intro-page-active {
 }
 
 .carousel-viewport {
-    width: 88%;
-    max-width: 1280px;
+    width: 92%;
+    max-width: 1440px;
     position: relative;
     overflow: hidden;
     background: transparent;
@@ -507,14 +526,15 @@ body.intro-page-active {
 
 .slide-item {
     grid-area: 1 / 1;
+    position: relative;
     visibility: hidden;
     pointer-events: none;
     min-width: 0;
     display: grid;
-    grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
-    gap: clamp(28px, 5vw, 80px);
-    align-items: end;
-    padding: 12px;
+    grid-template-columns: minmax(0, 1.85fr) minmax(280px, 1fr);
+    gap: clamp(24px, 3vw, 52px);
+    align-items: center;
+    padding: 8px;
 }
 
 .slide-item.is-current,
@@ -527,28 +547,11 @@ body.intro-page-active {
 
 .slide-image {
     position: relative;
-    height: 68vh;
+    height: min(78vh, 900px);
     min-width: 0;
-    padding: clamp(18px, 2.5vw, 34px);
-    border: 1px solid #b5a58e;
-    background: linear-gradient(135deg, #fffdf8, #f2ede3);
-    box-shadow:
-        inset 0 0 0 3px #e2d8c8,
-        inset 0 0 0 4px #c2b29a,
-        0 5px 10px rgba(64, 52, 36, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-/* 襯紙內緣的細線，讓畫面多一層深度。 */
-.slide-image::after {
-    content: '';
-    position: absolute;
-    inset: clamp(12px, 1.7vw, 24px);
-    border: 1px solid rgba(143, 121, 89, 0.2);
-    box-shadow: inset 0 1px 3px rgba(64, 52, 36, 0.04);
-    pointer-events: none;
 }
 
 .slide-caption {
@@ -562,12 +565,14 @@ body.intro-page-active {
 }
 
 .caption-label {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 3;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding-bottom: 22px;
-    border-bottom: 1px solid rgba(44, 62, 80, 0.18);
+    justify-content: flex-end;
+    gap: 10px;
     font-size: 0.6rem;
     letter-spacing: 0.26em;
     color: #576574;
@@ -576,13 +581,14 @@ body.intro-page-active {
 .caption-pagination {
     display: flex;
     align-items: baseline;
-    gap: 10px;
+    gap: 6px;
     flex-shrink: 0;
+    color: #6f797e;
 }
 
 .caption-number {
     font-family: "Baskerville", "Times New Roman", serif;
-    font-size: clamp(3.5rem, 6vw, 5.5rem);
+    font-size: clamp(1.7rem, 2.6vw, 2.5rem);
     font-weight: 400;
     font-style: italic;
     line-height: 0.9;
@@ -591,7 +597,7 @@ body.intro-page-active {
 }
 
 .caption-total {
-    font-size: 0.65rem;
+    font-size: 0.58rem;
     letter-spacing: 0.08em;
     font-variant-numeric: tabular-nums;
 }
@@ -624,9 +630,9 @@ body.intro-page-active {
 
 .slide-item img {
     max-width: 100%;
-    max-height: 100%;
+    max-height: none;
     width: auto;
-    height: auto;
+    height: 100%;
     object-fit: contain;
     display: block;
 }
@@ -682,13 +688,15 @@ body.intro-page-active {
 /* 文字頁面 */
 .info-page {
     justify-content: center;
-    align-items: center;
-    padding: 40px 20px;
+    align-items: flex-start;
+    padding: clamp(64px, 10vh, 120px) clamp(24px, 7vw, 96px);
+    overflow-y: auto;
 }
 
 .text-container {
     width: 100%;
-    max-width: 680px;
+    max-width: 820px;
+    margin: 0 auto;
     text-align: left;
     line-height: 1.9;
 }
@@ -817,26 +825,37 @@ body.text-page-active {
     .arrow-btn:active { transform: translateY(-50%); }
 }
 @media (max-width: 768px) {
+    #gallery-page {
+        align-items: flex-start;
+        overflow-y: auto;
+        padding-bottom: 48px;
+    }
+
     .carousel-viewport {
-        width: 90%;
+        width: 94%;
+        overflow: visible;
     }
 
     .slide-item {
         grid-template-columns: minmax(0, 1fr);
         grid-template-rows: auto 1fr;
-        gap: 28px;
+        gap: 24px;
         align-items: start;
         padding: 0 8px;
     }
 
-    .slide-image {
-        height: 52vh;
-        height: 52svh;
-        padding: 18px;
+    .caption-label {
+        top: 10px;
+        right: 14px;
+        padding: 5px 7px;
+        background: rgba(239, 236, 230, 0.72);
+        -webkit-backdrop-filter: blur(4px);
+        backdrop-filter: blur(4px);
     }
 
-    .slide-image::after {
-        inset: 12px;
+    .slide-image {
+        height: 60vh;
+        height: 60svh;
     }
 
 
@@ -856,17 +875,13 @@ body.text-page-active {
         font-size: 3.5rem;
     }
 
-    .caption-label {
-        padding-bottom: 18px;
-    }
-
     .slide-caption::after {
         margin-top: 24px;
     }
 
     .arrow-btn {
-        top: calc(26vh + 12px);
-        top: calc(26svh + 12px);
+        top: calc(30vh + 12px);
+        top: calc(30svh + 12px);
         width: 44px;
         height: 44px;
         background: rgba(255, 253, 248, 0.88);
@@ -1004,32 +1019,4 @@ body.entrance-open { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
     .breeze-shape, .breeze-shape.is-stirred, .entrance-prompt, .entrance-enter::before { transition: none; }
     .entrance-prompt { transform: none; }
-}
-/* 選單切頁：從畫面中央擴散暖色光幕，再揭開下一頁。 */
-.page-transition {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    max-width: none;
-    max-height: none;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    outline: none;
-    overflow: hidden;
-    background: transparent;
-}
-.page-transition::backdrop { background: transparent; }
-.page-transition-wash {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 320vmax;
-    height: 320vmax;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    background: radial-gradient(circle closest-side,
-        var(--transition-color, #efece6) 0%,
-        var(--transition-color, #efece6) 48%, transparent 72%);
 }
