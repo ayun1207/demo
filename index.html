@@ -38,10 +38,10 @@
             </div>
             
             <nav class="menu-navigation" aria-label="網站導覽">
-                <button class="nav-btn active" type="button" data-page="intro" aria-current="page" onclick="switchPage('intro')"><span class="menu-number">01</span>節氣序章<span class="menu-arrow" aria-hidden="true">↗</span></button>
-                <button class="nav-btn" type="button" data-page="gallery" onclick="switchPage('gallery')"><span class="menu-number">02</span>作品展示<span class="menu-arrow" aria-hidden="true">↗</span></button>
-                <button class="nav-btn" type="button" data-page="text" onclick="switchPage('text')"><span class="menu-number">03</span>繪師資訊<span class="menu-arrow" aria-hidden="true">↗</span></button>
-                <button class="nav-btn" type="button" data-page="planning" onclick="switchPage('planning')"><span class="menu-number">04</span>籌劃細節<span class="menu-arrow" aria-hidden="true">↗</span></button>
+                <button class="nav-btn active" type="button" data-page="intro" aria-current="page" onclick="switchPage('intro')">節氣序章<span class="menu-arrow" aria-hidden="true">↗</span></button>
+                <button class="nav-btn" type="button" data-page="gallery" onclick="switchPage('gallery')">作品展示<span class="menu-arrow" aria-hidden="true">↗</span></button>
+                <button class="nav-btn" type="button" data-page="text" onclick="switchPage('text')">繪師資訊<span class="menu-arrow" aria-hidden="true">↗</span></button>
+                <button class="nav-btn" type="button" data-page="planning" onclick="switchPage('planning')">籌劃細節<span class="menu-arrow" aria-hidden="true">↗</span></button>
             </nav>
             
         </div>
@@ -52,7 +52,7 @@
         <section id="intro-page" class="page-content intro-page active" aria-labelledby="introTitle">
             <div class="intro-layout">
                 <div class="intro-copy">
-                    <p class="intro-eyebrow">01 / PROLOGUE · 二十四節氣</p>
+                    <p class="intro-eyebrow">PROLOGUE · 二十四節氣</p>
                     <h1 id="introTitle">文字</h1>
                     <div class="intro-rule" aria-hidden="true"></div>
                     <p class="intro-lead">
@@ -98,8 +98,10 @@
                     <span class="solar-term solar-winter" style="--angle:330deg">小寒</span>
                     <span class="solar-term solar-winter" style="--angle:345deg">大寒</span>
 
-                    <div class="solar-center">
-                        
+                    <div class="solar-center" aria-hidden="true">
+                        <span id="solarCenterTerm"></span>
+                        <small id="solarCenterIndex"></small>
+                        <p id="solarCenterNote"></p>
                     </div>
                 </div>
             </div>
@@ -119,7 +121,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo1.png" alt="圖片 1"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">01</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">01</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -127,7 +129,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo2.png" alt="圖片 2"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">02</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">02</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -135,7 +137,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo3.jpg" alt="圖片 3"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">03</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">03</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -143,7 +145,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo4.jpg" alt="圖片 4"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">04</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">04</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -151,7 +153,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo5.jpg" alt="圖片 5"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">05</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">05</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -159,7 +161,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo6.jpg" alt="圖片 6"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">06</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">06</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -167,7 +169,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo7.jpg" alt="圖片 7"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">07</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">07</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -175,7 +177,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo8.jpg" alt="圖片 8"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">08</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">08</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -183,7 +185,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo9.jpg" alt="圖片 9"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">09</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">09</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -191,7 +193,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo10.jpg" alt="圖片 10"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">10</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">10</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -199,7 +201,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo11.jpg" alt="圖片 11"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">11</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">11</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -207,7 +209,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo12.jpg" alt="圖片 12"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">12</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">12</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -215,7 +217,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo13.jpg" alt="圖片 13"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">13</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">13</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -223,7 +225,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo14.jpg" alt="圖片 14"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">14</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">14</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -231,7 +233,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo15.jpg" alt="圖片 15"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">15</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">15</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -239,7 +241,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo16.jpg" alt="圖片 16"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">16</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">16</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -247,7 +249,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo17.jpg" alt="圖片 17"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">17</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">17</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -255,7 +257,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo18.jpg" alt="圖片 18"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">18</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">18</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -263,7 +265,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo19.jpg" alt="圖片 19"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">19</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">19</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -271,7 +273,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo20.jpg" alt="圖片 20"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">20</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">20</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -279,7 +281,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo21.jpg" alt="圖片 21"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">21</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">21</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -287,7 +289,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo22.jpg" alt="圖片 22"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">22</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">22</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -295,7 +297,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo23.jpg" alt="圖片 23"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">23</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">23</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -303,7 +305,7 @@
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo24.jpg" alt="圖片 24"></div>
                         <figcaption class="slide-caption">
-                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">24</span><span class="caption-total">/ 24</span></span></p>
+                            <p class="caption-label">COLLECTION <span class="caption-pagination"><span class="caption-number">24</span><span class="caption-total">OF 24</span></span></p>
                             <h2>節氣</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
@@ -321,7 +323,7 @@
         <!-- 繪師資訊：可在這裡補上介紹與連結。 -->
         <section id="text-page" class="page-content info-page" aria-labelledby="artistTitle">
             <div class="text-container">
-                <p class="info-eyebrow">03 / ARTISTS</p>
+                <p class="info-eyebrow">ARTISTS</p>
                 <h1 id="artistTitle">繪師資訊</h1>
                 <h2>特別感謝</h2>
                 <p>繪師</p>
@@ -330,7 +332,7 @@
         </section>
         <section id="planning-page" class="page-content info-page" aria-labelledby="planningTitle">
             <div class="text-container">
-                <p class="info-eyebrow">04 / BEHIND THE SCENES</p>
+                <p class="info-eyebrow">BEHIND THE SCENES</p>
                 <h1 id="planningTitle">籌劃細節</h1>
                 
                 <!-- 可在這裡加入企劃緣起、製作過程與參與名單。 -->

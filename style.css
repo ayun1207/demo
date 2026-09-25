@@ -159,7 +159,6 @@ body.menu-open { overflow: hidden; }
     background: rgba(143, 121, 89, 0.09);
 }
 
-.menu-number { font-size: 0.65rem; color: #756951; }
 .menu-arrow { margin-left: auto; opacity: 0.5; }
 .nav-btn.active .menu-arrow { opacity: 1; }
 
@@ -393,6 +392,7 @@ body.intro-page-active {
 
 .solar-term {
     --orbit-offset: -190px;
+    --term-scale: 1;
 
     position: absolute;
     left: 50%;
@@ -410,10 +410,36 @@ body.intro-page-active {
         translate(-50%, -50%)
         rotate(var(--angle))
         translateY(var(--orbit-offset))
-        rotate(calc(0deg - var(--angle)));
+        rotate(calc(0deg - var(--angle)))
+        scale(var(--term-scale));
 
     transform-origin: center;
     white-space: nowrap;
+    transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
+        color 220ms ease, opacity 220ms ease, text-shadow 220ms ease;
+}
+
+.solar-cycle.is-previewing .solar-term:not(.is-previewing) {
+    opacity: 0.38;
+}
+
+.solar-term.is-previewing {
+    --term-scale: 1.28;
+    z-index: 3;
+    color: #37413d;
+    text-shadow: 0 0 18px rgba(255, 253, 248, 0.95);
+}
+
+.solar-ring {
+    transition: border-color 300ms ease, box-shadow 450ms ease;
+}
+
+.solar-cycle.is-previewing .solar-ring {
+    border-color: rgba(117, 105, 81, 0.42);
+    box-shadow:
+        0 0 0 18px rgba(255, 253, 248, 0.18),
+        0 0 42px rgba(117, 105, 81, 0.1),
+        inset 0 0 35px rgba(255, 255, 255, 0.28);
 }
 
 .solar-spring,
@@ -427,7 +453,7 @@ body.intro-page-active {
     position: absolute;
     left: 50%;
     top: 50%;
-    width: 34%;
+    width: 40%;
     aspect-ratio: 1;
     transform: translate(-50%, -50%);
     border-radius: 50%;
@@ -449,10 +475,26 @@ body.intro-page-active {
 }
 
 .solar-center small {
-    margin-top: 10px;
+    margin-top: 7px;
     font-size: clamp(0.42rem, 0.55vw, 0.55rem);
     letter-spacing: 0.17em;
     color: #807a6d;
+}
+
+.solar-center p {
+    width: 82%;
+    margin-top: 11px;
+    color: #686f68;
+    font-family: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+    font-size: clamp(0.56rem, 0.72vw, 0.68rem);
+    line-height: 1.7;
+    letter-spacing: 0.06em;
+}
+
+.solar-center span:empty,
+.solar-center small:empty,
+.solar-center p:empty {
+    display: none;
 }
 
 @media (max-width: 768px) {
@@ -499,6 +541,11 @@ body.intro-page-active {
     .intro-enter-gallery {
         transition: none;
         transform: none;
+    }
+
+    .solar-term,
+    .solar-ring {
+        transition: none;
     }
 }
 
@@ -572,10 +619,134 @@ body.intro-page-active {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 10px;
+    gap: 11px;
+    padding: 7px 9px;
+    border-radius: 18px;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 253, 248, 0.04),
+        rgba(255, 253, 248, 0.34)
+    );
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
     font-size: 0.6rem;
     letter-spacing: 0.26em;
     color: #576574;
+    text-shadow: 0 1px 8px rgba(255, 253, 248, 0.92);
+}
+
+.cycle-orbit {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    flex: 0 0 50px;
+    border-radius: 50%;
+    border: 1px solid rgba(117, 105, 81, 0.16);
+    box-shadow: inset 0 0 0 5px rgba(255, 253, 248, 0.08);
+    filter: drop-shadow(0 1px 4px rgba(255, 253, 248, 0.62));
+    transition: box-shadow 300ms ease;
+}
+
+.cycle-orbit::before,
+.cycle-orbit::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+/* 二十四個刻度，對應一年中的二十四個節氣。 */
+.cycle-orbit::before {
+    inset: 0;
+    background: repeating-conic-gradient(
+        from -0.4deg,
+        rgba(81, 94, 85, 0.5) 0 0.85deg,
+        transparent 0.85deg 15deg
+    );
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 0);
+    mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 0);
+}
+
+/* 春、夏、秋、冬四段低彩度色環。 */
+.cycle-orbit::after {
+    inset: 8px;
+    background: conic-gradient(
+        rgba(137, 158, 119, 0.72) 0 25%,
+        rgba(190, 153, 88, 0.72) 25% 50%,
+        rgba(172, 119, 101, 0.72) 50% 75%,
+        rgba(109, 140, 153, 0.72) 75% 100%
+    );
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 1.5px), #000 0);
+    mask: radial-gradient(farthest-side, transparent calc(100% - 1.5px), #000 0);
+}
+
+.cycle-marker {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    transform: rotate(var(--cycle-angle, 0deg));
+    transition: transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.cycle-marker::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    width: 10px;
+    height: 15px;
+    border: 1px solid rgba(72, 91, 72, 0.36);
+    border-radius: 90% 8% 90% 8%;
+    background:
+        linear-gradient(45deg, transparent 46%, rgba(70, 91, 69, 0.42) 47% 52%, transparent 53%),
+        linear-gradient(135deg, #bec9ac, #70836d 72%);
+    box-shadow: 0 0 0 2px rgba(255, 253, 248, 0.7),
+        0 3px 9px rgba(70, 83, 68, 0.2);
+    transform: translateX(-50%) rotate(42deg);
+}
+
+.cycle-marker::after {
+    content: '';
+    position: absolute;
+    top: 7px;
+    left: 50%;
+    width: 1px;
+    height: 6px;
+    border-radius: 1px;
+    background: rgba(82, 99, 78, 0.64);
+    transform: translateX(-50%) rotate(-8deg);
+    transform-origin: top;
+}
+
+.caption-term {
+    margin-right: 2px;
+    font-family: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+    font-size: 0.82rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    color: #46534c;
+    white-space: nowrap;
+    text-shadow: 0 1px 9px rgba(255, 253, 248, 0.96);
+}
+
+.cycle-complete .cycle-orbit {
+    animation: cycle-complete-glow 900ms ease-out;
+}
+
+@keyframes cycle-complete-glow {
+    0% {
+        box-shadow: inset 0 0 0 5px rgba(255, 253, 248, 0.08),
+            0 0 0 rgba(117, 105, 81, 0);
+    }
+    45% {
+        box-shadow: inset 0 0 0 5px rgba(255, 253, 248, 0.08),
+            0 0 0 8px rgba(117, 105, 81, 0.12),
+            0 0 24px rgba(117, 105, 81, 0.22);
+    }
+    100% {
+        box-shadow: inset 0 0 0 5px rgba(255, 253, 248, 0.08),
+            0 0 0 14px rgba(117, 105, 81, 0);
+    }
 }
 
 .caption-pagination {
@@ -823,6 +994,8 @@ body.text-page-active {
     .arrow-btn, .menu-toggle span, .menu-arrow { transition: none; }
     .menu-toggle:active, .menu-close:active, .nav-btn:active { transform: none; }
     .arrow-btn:active { transform: translateY(-50%); }
+    .cycle-marker { transition: none; }
+    .cycle-complete .cycle-orbit { animation: none; }
 }
 @media (max-width: 768px) {
     #gallery-page {
@@ -847,10 +1020,20 @@ body.text-page-active {
     .caption-label {
         top: 10px;
         right: 14px;
-        padding: 5px 7px;
-        background: rgba(239, 236, 230, 0.72);
-        -webkit-backdrop-filter: blur(4px);
-        backdrop-filter: blur(4px);
+        padding: 6px 8px;
+        background: linear-gradient(
+            90deg,
+            rgba(255, 253, 248, 0.1),
+            rgba(255, 253, 248, 0.46)
+        );
+        -webkit-backdrop-filter: blur(5px);
+        backdrop-filter: blur(5px);
+    }
+
+    .cycle-orbit {
+        width: 54px;
+        height: 54px;
+        flex-basis: 54px;
     }
 
     .slide-image {

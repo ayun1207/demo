@@ -153,7 +153,11 @@ let currentIndex = 0;
 let isAnimating = false;
 let turnAnimations = [];
 let turnVersion = 0;
+let cycleRotation = 0;
+let cycleCompleteTimer;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+document.documentElement.style.setProperty('--cycle-angle', '0deg');
 
 function updateBackgroundColor() {
     document.body.style.backgroundColor = backgroundColors[currentIndex];
@@ -178,9 +182,24 @@ async function moveSlide(direction) {
     if (isAnimating || !document.getElementById('gallery-page').classList.contains('active')) return;
     if (direction !== 1 && direction !== -1) return;
 
+    const previousIndex = currentIndex;
     const outgoing = originalSlides[currentIndex];
     currentIndex = (currentIndex + direction + totalSlides) % totalSlides;
     const incoming = originalSlides[currentIndex];
+
+    cycleRotation += direction * 15;
+    document.documentElement.style.setProperty('--cycle-angle', `${cycleRotation}deg`);
+
+    if (!reducedMotion.matches && direction === 1 && previousIndex === totalSlides - 1) {
+        clearTimeout(cycleCompleteTimer);
+        document.body.classList.remove('cycle-complete');
+        void document.body.offsetWidth;
+        document.body.classList.add('cycle-complete');
+        cycleCompleteTimer = setTimeout(() => {
+            document.body.classList.remove('cycle-complete');
+        }, 900);
+    }
+
     updateBackgroundColor();
 
     if (reducedMotion.matches || typeof outgoing.animate !== 'function') {
@@ -229,6 +248,84 @@ reducedMotion.addEventListener('change', () => {
     if (reducedMotion.matches) finishPageTurn();
 });
 finishPageTurn();
+
+/* =========================
+   序章節氣環預覽
+========================= */
+
+const solarCycle = document.querySelector('.solar-cycle');
+const solarTerms = Array.from(document.querySelectorAll('.solar-term'));
+const solarCenterTerm = document.getElementById('solarCenterTerm');
+const solarCenterIndex = document.getElementById('solarCenterIndex');
+const solarCenterNote = document.getElementById('solarCenterNote');
+const solarTermNotes = [
+    '風開始有了方向',
+    '細雨輕輕落進春天',
+    '雷聲喚醒沉睡的土地',
+    '晝與夜在此刻平衡',
+    '天光澄澈，萬物明淨',
+    '雨水滋養新生的穀物',
+    '日光漸長，夏意初醒',
+    '萬物將滿，仍留一線餘地',
+    '種子趕在盛夏前落土',
+    '白晝走到一年最長',
+    '熱意從風裡慢慢升起',
+    '盛夏抵達最深之處',
+    '第一縷涼意穿過長夏',
+    '暑氣在日暮裡緩緩退去',
+    '清晨開始凝結微光',
+    '晝夜再次平分秋色',
+    '露水帶來更深的涼意',
+    '草木收起最後的秋色',
+    '萬物開始向內收藏',
+    '初雪尚輕，冬意漸濃',
+    '天地逐漸歸於寂靜',
+    '長夜走到盡頭，微光將返',
+    '寒意停在歲末的風裡',
+    '一年最冷，也最接近新生'
+];
+
+originalSlides.forEach((slide, index) => {
+    const label = slide.querySelector('.caption-label');
+    if (!label) return;
+
+    const orbit = document.createElement('span');
+    orbit.className = 'cycle-orbit';
+    orbit.setAttribute('aria-hidden', 'true');
+
+    const marker = document.createElement('span');
+    marker.className = 'cycle-marker';
+    orbit.append(marker);
+
+    const termLabel = document.createElement('span');
+    termLabel.className = 'caption-term';
+    termLabel.textContent = solarTerms[index]?.textContent.trim() ?? '';
+
+    label.prepend(termLabel);
+    label.prepend(orbit);
+});
+
+function previewSolarTerm(term, index) {
+    solarTerms.forEach(item => item.classList.toggle('is-previewing', item === term));
+    solarCycle.classList.add('is-previewing');
+    solarCenterTerm.textContent = term.textContent.trim();
+    solarCenterIndex.textContent = `SOLAR TERM ${String(index + 1).padStart(2, '0')} OF 24`;
+    solarCenterNote.textContent = solarTermNotes[index];
+}
+
+function clearSolarTermPreview() {
+    solarTerms.forEach(item => item.classList.remove('is-previewing'));
+    solarCycle.classList.remove('is-previewing');
+    solarCenterTerm.textContent = '';
+    solarCenterIndex.textContent = '';
+    solarCenterNote.textContent = '';
+}
+
+solarTerms.forEach((term, index) => {
+    term.addEventListener('pointerenter', () => previewSolarTerm(term, index));
+});
+
+solarCycle.addEventListener('pointerleave', clearSolarTermPreview);
 
 // 使用獨立的 scale 動畫，避免覆蓋箭頭本身的垂直定位。
 const buttonAnimations = new WeakMap();
