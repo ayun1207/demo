@@ -339,6 +339,9 @@ body.intro-page-active {
     aspect-ratio: 1;
     justify-self: end;
     border-radius: 50%;
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .solar-ring {
@@ -761,12 +764,18 @@ body.intro-page-active {
 }
 
 .caption-number {
+    display: inline-block;
+    width: 1.45em;
+    flex: 0 0 1.45em;
+    text-align: right;
     font-family: "Baskerville", "Times New Roman", serif;
     font-size: clamp(1.7rem, 2.6vw, 2.5rem);
     font-weight: 400;
     font-style: italic;
     line-height: 0.9;
     letter-spacing: -0.07em;
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
     color: #7a858b;
 }
 
