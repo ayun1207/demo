@@ -12,7 +12,7 @@
             <h1 id="entranceTitle">文字</h1>
             <p id="entranceDescription">文字</p>
             <button id="enterExhibition" class="entrance-enter" type="button">
-                <span class="entrance-prompt">Continue</span>
+                <span class="entrance-prompt">入新章</span>
             </button>
             <p id="entranceMusicHint" class="entrance-hint" hidden>進入後將播放背景音樂，可隨時暫停。</p>
             <button id="enterQuietly" class="entrance-quiet" type="button" hidden>靜音進入</button>
@@ -25,7 +25,7 @@
         <button id="menuToggle" class="menu-toggle" type="button" aria-label="開啟導覽選單" aria-controls="siteMenu" aria-expanded="false" onclick="openMenu()">
             <span></span><span></span><span></span>
         </button>
-        <span class="current-page-label" id="currentPageLabel">節氣序章</span>
+        <span class="current-page-label" id="currentPageLabel">理時序</span>
         <button id="musicToggle" class="music-toggle" type="button" aria-label="播放背景音樂" hidden>音樂 / 播放</button>
         <span id="musicStatus" class="music-status" role="status"></span>
     </header>
@@ -38,17 +38,18 @@
             </div>
             
             <nav class="menu-navigation" aria-label="網站導覽">
-                <button class="nav-btn active" type="button" data-page="intro" aria-current="page" onclick="switchPage('intro')">節氣序章<span class="menu-arrow" aria-hidden="true">↗</span></button>
-                <button class="nav-btn" type="button" data-page="gallery" onclick="switchPage('gallery')">作品展示<span class="menu-arrow" aria-hidden="true">↗</span></button>
-                <button class="nav-btn" type="button" data-page="text" onclick="switchPage('text')">繪師資訊<span class="menu-arrow" aria-hidden="true">↗</span></button>
-                <button class="nav-btn" type="button" data-page="planning" onclick="switchPage('planning')">籌劃細節<span class="menu-arrow" aria-hidden="true">↗</span></button>
+                <button class="nav-btn active" type="button" data-page="intro" aria-current="page" onclick="switchPage('intro')">理時序<span class="menu-arrow" aria-hidden="true">↗</span></button>
+                <button class="nav-btn" type="button" data-page="gallery" onclick="switchPage('gallery')">觀芳華<span class="menu-arrow" aria-hidden="true">↗</span></button>
+                <button class="nav-btn" type="button" data-page="text" onclick="switchPage('text')">繪春信<span class="menu-arrow" aria-hidden="true">↗</span></button>
+                <button class="nav-btn" type="button" data-page="planning" onclick="switchPage('planning')">籌花事<span class="menu-arrow" aria-hidden="true">↗</span></button>
+                <button class="nav-btn" type="button" data-page="thanks" onclick="switchPage('thanks')">謝花人<span class="menu-arrow" aria-hidden="true">↗</span></button>
             </nav>
             
         </div>
     </dialog>
 
     <main>
-        <!-- 節氣序章：Splash 之後先以文字建立企劃的世界觀，再進入作品展示。 -->
+        <!-- 理時序：Splash 之後先以文字建立企劃的世界觀，再進入作品展示。 -->
         <section id="intro-page" class="page-content intro-page active" aria-labelledby="introTitle">
             <div class="intro-layout">
                 <div class="intro-copy">
@@ -62,7 +63,7 @@
                         
                     </p>
                     <button class="intro-enter-gallery" type="button" onclick="switchPage('gallery')">
-                        <span>委託作品</span>
+                        <span>觀芳華</span>
                         <span aria-hidden="true">→</span>
                     </button>
                 </div>
@@ -320,22 +321,26 @@
             </button>
         </section>
 
-        <!-- 繪師資訊：可在這裡補上介紹與連結。 -->
+        <!-- 繪春信：可在這裡補上繪師介紹與連結。 -->
         <section id="text-page" class="page-content info-page" aria-labelledby="artistTitle">
             <div class="text-container">
                 <p class="info-eyebrow">ARTISTS</p>
-                <h1 id="artistTitle">繪師資訊</h1>
-                <h2>特別感謝</h2>
-                <p>繪師</p>
-                <p>委託名單</p>
+                <h1 id="artistTitle">繪春信</h1>
+                <!-- 可在這裡補上繪師介紹、社群帳號與作品連結。 -->
             </div>
         </section>
         <section id="planning-page" class="page-content info-page" aria-labelledby="planningTitle">
             <div class="text-container">
                 <p class="info-eyebrow">BEHIND THE SCENES</p>
-                <h1 id="planningTitle">籌劃細節</h1>
+                <h1 id="planningTitle">籌花事</h1>
                 
                 <!-- 可在這裡加入企劃緣起、製作過程與參與名單。 -->
+            </div>
+        </section>
+        <section id="thanks-page" class="page-content info-page" aria-labelledby="thanksTitle">
+            <div class="text-container">
+                <h1 id="thanksTitle">謝花人</h1>
+                <!-- 原先放在繪春信頁的委託名單，之後可在此補上完整名單。 -->
             </div>
         </section>
     </main>

@@ -171,6 +171,8 @@ body.menu-open { overflow: hidden; }
 
     .site-menu.is-open .nav-btn:nth-child(2) { animation-delay: 300ms; }
     .site-menu.is-open .nav-btn:nth-child(3) { animation-delay: 450ms; }
+    .site-menu.is-open .nav-btn:nth-child(4) { animation-delay: 600ms; }
+    .site-menu.is-open .nav-btn:nth-child(5) { animation-delay: 750ms; }
 }
 
 @keyframes menu-item-enter {
@@ -224,7 +226,7 @@ main {
 
 
 /* =========================
-   節氣序章
+   理時序
 ========================= */
 .intro-page {
     position: relative;
@@ -920,7 +922,8 @@ body.text-page-active {
     background-attachment: fixed;
 }
 
-#text-page .text-container {
+#text-page .text-container,
+#thanks-page .text-container {
     padding: clamp(24px, 5vw, 56px);
     border: 1px solid rgba(255, 255, 255, 0.65);
     border-radius: 24px;
@@ -928,14 +931,19 @@ body.text-page-active {
     box-shadow: 0 16px 48px rgba(83, 69, 58, 0.06);
 }
 
-#text-page.active .text-container > * {
+#text-page.active .text-container > *,
+#thanks-page.active .text-container > * {
     animation: artist-content-enter 480ms ease-out both;
 }
 
-#text-page.active h1 { animation-delay: 60ms; }
-#text-page.active h2 { animation-delay: 120ms; }
-#text-page.active h2 + p { animation-delay: 180ms; }
-#text-page.active h2 + p + p { animation-delay: 240ms; }
+#text-page.active h1,
+#thanks-page.active h1 { animation-delay: 60ms; }
+#text-page.active h2,
+#thanks-page.active h2 { animation-delay: 120ms; }
+#text-page.active h2 + p,
+#thanks-page.active h2 + p { animation-delay: 180ms; }
+#text-page.active h2 + p + p,
+#thanks-page.active h2 + p + p { animation-delay: 240ms; }
 
 /* 全站按鈕以輕微位移、按壓和底色變化提供回饋。 */
 .menu-toggle,
@@ -1001,7 +1009,8 @@ body.text-page-active {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    #text-page.active .text-container > * { animation: none; }
+    #text-page.active .text-container > *,
+    #thanks-page.active .text-container > * { animation: none; }
     body, .page-content, .menu-toggle, .menu-close, .nav-btn,
     .arrow-btn, .menu-toggle span, .menu-arrow { transition: none; }
     .menu-toggle:active, .menu-close:active, .nav-btn:active { transform: none; }

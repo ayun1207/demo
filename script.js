@@ -74,11 +74,11 @@ function displayPage(pageName, targetPage, targetButton) {
     });
     targetPage.classList.add('active');
     document.body.classList.toggle('intro-page-active', pageName === 'intro');
-    document.body.classList.toggle('text-page-active', pageName === 'text');
+    document.body.classList.toggle('text-page-active', pageName === 'text' || pageName === 'thanks');
     targetButton.classList.add('active');
     targetButton.setAttribute('aria-current', 'page');
     document.getElementById('currentPageLabel').textContent = {
-        intro: '節氣序章', gallery: '作品展示', text: '繪師資訊', planning: '籌畫細節'
+        intro: '理時序', gallery: '觀芳華', text: '繪春信', planning: '籌花事', thanks: '謝花人'
     }[pageName];
     if (pageName === 'gallery') {
         updateBackgroundColor();
@@ -373,7 +373,7 @@ carouselViewport.addEventListener('touchend', (event) => {
     }
 }, { passive: true });
 
-/* 初始化：Splash 關閉後先顯示節氣序章。 */
+/* 初始化：Splash 關閉後先顯示理時序。 */
 document.body.classList.add('intro-page-active');
 document.body.style.backgroundColor = '#F3EFE5';
 
