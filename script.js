@@ -309,7 +309,6 @@ function previewSolarTerm(term, index) {
     solarTerms.forEach(item => item.classList.toggle('is-previewing', item === term));
     solarCycle.classList.add('is-previewing');
     solarCenterTerm.textContent = term.textContent.trim();
-    solarCenterIndex.textContent = `SOLAR TERM ${String(index + 1).padStart(2, '0')} OF 24`;
     solarCenterNote.textContent = solarTermNotes[index];
 }
 
