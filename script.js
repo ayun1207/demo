@@ -256,8 +256,12 @@ finishPageTurn();
 const solarCycle = document.querySelector('.solar-cycle');
 const solarTerms = Array.from(document.querySelectorAll('.solar-term'));
 const solarCenterTerm = document.getElementById('solarCenterTerm');
-const solarCenterIndex = document.getElementById('solarCenterIndex');
 const solarCenterNote = document.getElementById('solarCenterNote');
+const solarTrailLayer = document.querySelector('.solar-trail-layer');
+let solarLeafAngle = 0;
+let solarTypingTimer;
+let solarHoverTimer;
+let solarPreviewVersion = 0;
 const solarTermNotes = [
     '風開始有了方向',
     '細雨輕輕落進春天',
@@ -284,6 +288,13 @@ const solarTermNotes = [
     '寒意停在歲末的風裡',
     '一年最冷，也最接近新生'
 ];
+const solarSeasons = ['spring', 'summer', 'autumn', 'winter'];
+const solarSeasonTrailColors = [
+    'rgba(177, 197, 164, 0.62)',
+    'rgba(218, 190, 146, 0.6)',
+    'rgba(207, 174, 165, 0.58)',
+    'rgba(171, 193, 208, 0.62)'
+];
 
 originalSlides.forEach((slide, index) => {
     const label = slide.querySelector('.caption-label');
@@ -305,23 +316,103 @@ originalSlides.forEach((slide, index) => {
     label.prepend(orbit);
 });
 
-function previewSolarTerm(term, index) {
+function typeSolarText(target, text, delay, version, onComplete) {
+    const characters = Array.from(text);
+    let position = 0;
+    target.textContent = '';
+
+    const writeNextCharacter = () => {
+        if (version !== solarPreviewVersion) return;
+        target.textContent += characters[position];
+        position += 1;
+
+        if (position < characters.length) {
+            solarTypingTimer = setTimeout(writeNextCharacter, delay);
+        } else if (onComplete) {
+            solarTypingTimer = setTimeout(() => {
+                if (version === solarPreviewVersion) onComplete();
+            }, 130);
+        }
+    };
+
+    writeNextCharacter();
+}
+
+function writeSolarPreview(termText, noteText) {
+    clearTimeout(solarTypingTimer);
+    const version = ++solarPreviewVersion;
+    solarCenterTerm.getAnimations().forEach(animation => animation.cancel());
+    solarCenterTerm.textContent = termText;
+    solarCenterNote.textContent = '';
+
+    if (reducedMotion.matches) {
+        solarCenterNote.textContent = noteText;
+        return;
+    }
+
+    solarCenterTerm.animate([
+        { opacity: 0.18 },
+        { opacity: 1 }
+    ], {
+        duration: 760,
+        easing: 'ease-out',
+        fill: 'both'
+    });
+
+    solarTypingTimer = setTimeout(() => {
+        if (version === solarPreviewVersion) {
+            typeSolarText(solarCenterNote, noteText, 96, version);
+        }
+    }, 420);
+}
+
+function followSolarTerm(term, index) {
+    const targetAngle = index * 15;
+    const currentAngle = ((solarLeafAngle % 360) + 360) % 360;
+    const shortestTurn = ((targetAngle - currentAngle + 540) % 360) - 180;
+    solarLeafAngle += shortestTurn;
+    solarCycle.style.setProperty('--solar-leaf-angle', `${solarLeafAngle}deg`);
+    const seasonIndex = Math.floor(index / 6);
+    solarCycle.dataset.season = solarSeasons[seasonIndex];
     solarTerms.forEach(item => item.classList.toggle('is-previewing', item === term));
     solarCycle.classList.add('is-previewing');
-    solarCenterTerm.textContent = term.textContent.trim();
-    solarCenterNote.textContent = solarTermNotes[index];
+
+    if (!reducedMotion.matches) {
+        const trailPoint = document.createElement('span');
+        trailPoint.className = 'solar-trail-point';
+        trailPoint.style.setProperty('--trail-angle', `${targetAngle}deg`);
+        trailPoint.style.setProperty('--trail-color', solarSeasonTrailColors[seasonIndex]);
+        solarTrailLayer.append(trailPoint);
+        setTimeout(() => trailPoint.remove(), 1150);
+
+    }
+}
+
+function previewSolarTerm(term, index) {
+    writeSolarPreview(term.textContent.trim(), solarTermNotes[index]);
+    solarCycle.classList.add('has-preview');
 }
 
 function clearSolarTermPreview() {
+    clearTimeout(solarHoverTimer);
+    clearTimeout(solarTypingTimer);
+    solarPreviewVersion += 1;
     solarTerms.forEach(item => item.classList.remove('is-previewing'));
     solarCycle.classList.remove('is-previewing');
-    solarCenterTerm.textContent = '';
-    solarCenterIndex.textContent = '';
+    solarCycle.classList.remove('has-preview');
+    delete solarCycle.dataset.season;
+    solarCenterTerm.getAnimations().forEach(animation => animation.cancel());
+    solarCenterTerm.textContent = '歲·律';
     solarCenterNote.textContent = '';
 }
 
 solarTerms.forEach((term, index) => {
-    term.addEventListener('pointerenter', () => previewSolarTerm(term, index));
+    term.addEventListener('pointerenter', () => {
+        clearTimeout(solarHoverTimer);
+        followSolarTerm(term, index);
+        solarHoverTimer = setTimeout(() => previewSolarTerm(term, index), 42);
+    });
+    term.addEventListener('pointerleave', () => clearTimeout(solarHoverTimer));
 });
 
 solarCycle.addEventListener('pointerleave', clearSolarTermPreview);

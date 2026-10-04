@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>展示網站</title>
+    <link rel="stylesheet" href="fonts/chiron/css/vf.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -37,11 +38,11 @@
             </div>
             
             <nav class="menu-navigation" aria-label="網站導覽">
-                <button class="nav-btn active" type="button" data-page="intro" aria-current="page" onclick="switchPage('intro')">理時序<span class="menu-arrow" aria-hidden="true">↗</span></button>
-                <button class="nav-btn" type="button" data-page="gallery" onclick="switchPage('gallery')">觀芳華<span class="menu-arrow" aria-hidden="true">↗</span></button>
-                <button class="nav-btn" type="button" data-page="text" onclick="switchPage('text')">繪春信<span class="menu-arrow" aria-hidden="true">↗</span></button>
-                <button class="nav-btn" type="button" data-page="planning" onclick="switchPage('planning')">籌花事<span class="menu-arrow" aria-hidden="true">↗</span></button>
-                <button class="nav-btn" type="button" data-page="thanks" onclick="switchPage('thanks')">謝花人<span class="menu-arrow" aria-hidden="true">↗</span></button>
+                <button class="nav-btn active" type="button" data-page="intro" aria-current="page" onclick="switchPage('intro')">理時序<span class="menu-arrow" aria-hidden="true"></span></button>
+                <button class="nav-btn" type="button" data-page="gallery" onclick="switchPage('gallery')">觀芳華<span class="menu-arrow" aria-hidden="true"></span></button>
+                <button class="nav-btn" type="button" data-page="text" onclick="switchPage('text')">繪春信<span class="menu-arrow" aria-hidden="true"></span></button>
+                <button class="nav-btn" type="button" data-page="planning" onclick="switchPage('planning')">籌花事<span class="menu-arrow" aria-hidden="true"></span></button>
+                <button class="nav-btn" type="button" data-page="thanks" onclick="switchPage('thanks')">謝花人<span class="menu-arrow" aria-hidden="true"></span></button>
             </nav>
             
         </div>
@@ -75,34 +76,37 @@
                     <div class="solar-axis solar-axis-horizontal" aria-hidden="true"></div>
 
 
-                    <span class="solar-term solar-spring" style="--angle:0deg">立春</span>
+                    <span class="solar-term solar-spring solar-cardinal" style="--angle:0deg">立春</span>
                     <span class="solar-term solar-spring" style="--angle:15deg">雨水</span>
                     <span class="solar-term solar-spring" style="--angle:30deg">驚蟄</span>
                     <span class="solar-term solar-spring" style="--angle:45deg">春分</span>
                     <span class="solar-term solar-spring" style="--angle:60deg">清明</span>
                     <span class="solar-term solar-spring" style="--angle:75deg">穀雨</span>
-                    <span class="solar-term solar-summer" style="--angle:90deg">立夏</span>
+                    <span class="solar-term solar-summer solar-cardinal" style="--angle:90deg">立夏</span>
                     <span class="solar-term solar-summer" style="--angle:105deg">小滿</span>
                     <span class="solar-term solar-summer" style="--angle:120deg">芒種</span>
                     <span class="solar-term solar-summer" style="--angle:135deg">夏至</span>
                     <span class="solar-term solar-summer" style="--angle:150deg">小暑</span>
                     <span class="solar-term solar-summer" style="--angle:165deg">大暑</span>
-                    <span class="solar-term solar-autumn" style="--angle:180deg">立秋</span>
+                    <span class="solar-term solar-autumn solar-cardinal" style="--angle:180deg">立秋</span>
                     <span class="solar-term solar-autumn" style="--angle:195deg">處暑</span>
                     <span class="solar-term solar-autumn" style="--angle:210deg">白露</span>
                     <span class="solar-term solar-autumn" style="--angle:225deg">秋分</span>
                     <span class="solar-term solar-autumn" style="--angle:240deg">寒露</span>
                     <span class="solar-term solar-autumn" style="--angle:255deg">霜降</span>
-                    <span class="solar-term solar-winter" style="--angle:270deg">立冬</span>
+                    <span class="solar-term solar-winter solar-cardinal" style="--angle:270deg">立冬</span>
                     <span class="solar-term solar-winter" style="--angle:285deg">小雪</span>
                     <span class="solar-term solar-winter" style="--angle:300deg">大雪</span>
                     <span class="solar-term solar-winter" style="--angle:315deg">冬至</span>
                     <span class="solar-term solar-winter" style="--angle:330deg">小寒</span>
                     <span class="solar-term solar-winter" style="--angle:345deg">大寒</span>
 
+                    <div class="solar-trail-layer" aria-hidden="true"></div>
+                    <span class="solar-guide" aria-hidden="true"></span>
+                    <span class="solar-leaf-marker" aria-hidden="true"></span>
                     <div class="solar-center" aria-hidden="true">
-                        <span id="solarCenterTerm"></span>
-                        <small id="solarCenterIndex"></small>
+                        <i class="solar-pivot"></i>
+                        <span id="solarCenterTerm">歲·律</span>
                         <p id="solarCenterNote"></p>
                     </div>
                 </div>
