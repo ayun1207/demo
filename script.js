@@ -67,6 +67,7 @@ siteMenu.addEventListener('close', () => {
 
 function displayPage(pageName, targetPage, targetButton) {
     finishPageTurn();
+    if (pageName !== 'intro') restIntroBreeze();
     document.querySelectorAll('.page-content').forEach(page => page.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(button => {
         button.classList.remove('active');
@@ -548,6 +549,7 @@ async function enterExhibition(withMusic = true) {
     } finally {
         entrance.close();
         document.body.classList.remove('entrance-open');
+        document.documentElement.classList.remove('entrance-open');
         menuToggle.focus({ preventScroll: true });
     }
 }
@@ -590,7 +592,6 @@ function trackEntrancePointer(event) {
     if (!entrance.open || enteringExhibition || event.pointerType === 'touch') return;
     entranceKeyboardMode = false;
     lastEntrancePointer = { x: event.clientX, y: event.clientY };
-    queueEntranceBreeze(event.clientX, event.clientY);
     refreshEntranceProximity();
 }
 
@@ -622,15 +623,17 @@ entrance.addEventListener('cancel', event => {
 entrance.showModal();
 entrance.focus({ preventScroll: true });
 document.body.classList.add('entrance-open');
+document.documentElement.classList.add('entrance-open');
 requestAnimationFrame(refreshEntranceProximity);
 
-// 裝飾僅在開場呈現，不接收點擊、不加入鍵盤焦點。
+// 四季裝飾移至「理時序」，置於內容後方且不接收點擊或鍵盤焦點。
+const introPage = document.getElementById('intro-page');
 const breezeLayer = document.createElement('div');
-breezeLayer.className = 'entrance-breeze';
+breezeLayer.className = 'intro-breeze';
 breezeLayer.setAttribute('aria-hidden', 'true');
 breezeLayer.inert = true;
-entrance.prepend(breezeLayer);
-// 四季各六枚装飾，中央留給企劃標題與入口。
+introPage.prepend(breezeLayer);
+// 四季各六枚裝飾，中央留給企劃文字與節氣環。
 const breezeLayout = [
     [8, 14, 28, -35], [21, 9, 18, 25], [33, 18, 21, 55], [12, 33, 23, 15], [24, 28, 15, -50], [5, 46, 19, 45],
     [70, 10, 24, -30], [87, 15, 29, 40], [95, 34, 19, -15], [79, 30, 20, 65], [91, 48, 24, -45], [62, 17, 16, 20],
@@ -657,7 +660,7 @@ const breezeMotes = breezeLayout.map(([x, y, size, tilt], index) => {
 let breezeFrame = 0;
 let breezeRestTimer;
 
-function restEntranceBreeze() {
+function restIntroBreeze() {
     cancelAnimationFrame(breezeFrame);
     clearTimeout(breezeRestTimer);
     breezeFrame = 0;
@@ -668,8 +671,8 @@ function restEntranceBreeze() {
     });
 }
 
-function updateEntranceBreeze(x, y) {
-    if (!entrance.open || enteringExhibition || reducedMotion.matches || document.hidden) return;
+function updateIntroBreeze(x, y) {
+    if (entrance.open || !introPage.classList.contains('active') || reducedMotion.matches || document.hidden) return;
     breezeMotes.forEach(({ anchor, shape, tilt }) => {
         if (!anchor.getClientRects().length) return;
         const rect = anchor.getBoundingClientRect();
@@ -692,17 +695,20 @@ function updateEntranceBreeze(x, y) {
     });
 }
 
-function queueEntranceBreeze(x, y) {
-    if (reducedMotion.matches) return;
+function queueIntroBreeze(x, y) {
+    if (entrance.open || !introPage.classList.contains('active') || reducedMotion.matches) return;
     cancelAnimationFrame(breezeFrame);
     clearTimeout(breezeRestTimer);
     breezeFrame = requestAnimationFrame(() => {
         breezeFrame = 0;
-        updateEntranceBreeze(x, y);
+        updateIntroBreeze(x, y);
     });
     // 滑鼠停下後餘韻慢慢消散，不持續執行動畫迴圈。
-    breezeRestTimer = setTimeout(restEntranceBreeze, 280);
+    breezeRestTimer = setTimeout(restIntroBreeze, 280);
 }
-entrance.addEventListener('close', restEntranceBreeze);
-document.addEventListener('visibilitychange', () => { if (document.hidden) restEntranceBreeze(); });
-reducedMotion.addEventListener('change', () => { if (reducedMotion.matches) restEntranceBreeze(); });
+
+window.addEventListener('pointermove', event => {
+    if (event.pointerType !== 'touch') queueIntroBreeze(event.clientX, event.clientY);
+}, { passive: true });
+document.addEventListener('visibilitychange', () => { if (document.hidden) restIntroBreeze(); });
+reducedMotion.addEventListener('change', () => { if (reducedMotion.matches) restIntroBreeze(); });
