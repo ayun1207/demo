@@ -624,7 +624,10 @@ entrance.showModal();
 entrance.focus({ preventScroll: true });
 document.body.classList.add('entrance-open');
 document.documentElement.classList.add('entrance-open');
-requestAnimationFrame(refreshEntranceProximity);
+requestAnimationFrame(() => {
+    document.documentElement.classList.remove('entrance-pending');
+    refreshEntranceProximity();
+});
 
 // 四季裝飾移至「理時序」，置於內容後方且不接收點擊或鍵盤焦點。
 const introPage = document.getElementById('intro-page');

@@ -26,6 +26,23 @@ html {
     scrollbar-gutter: stable;
 }
 
+/* JavaScript 將封面提升為 modal 前，先阻止理時序被繪製一幀。 */
+html.entrance-pending {
+    overflow: hidden;
+    scrollbar-gutter: auto;
+    background: #f1eadf;
+}
+
+html.entrance-pending body {
+    overflow: hidden;
+    background: #f1eadf;
+}
+
+html.entrance-pending .site-header,
+html.entrance-pending main {
+    visibility: hidden;
+}
+
 /* 預設背景顏色與平滑過渡動畫 */
 body {
     isolation: isolate;
@@ -1252,6 +1269,40 @@ body.intro-page-active {
     display: block;
 }
 
+/* 第 9、15、22 幅：接近 16:9 的橫式作品，以可用寬度為主配置。 */
+.slide-item-landscape {
+    grid-template-columns: minmax(0, 2.5fr) minmax(250px, 0.72fr);
+    gap: clamp(22px, 2.4vw, 38px);
+}
+
+.slide-item-landscape .slide-image {
+    height: min(72vh, 760px);
+}
+
+.slide-item-landscape .slide-image img {
+    width: 100%;
+    height: auto;
+    max-height: min(72vh, 760px);
+}
+
+.slide-item-landscape .slide-caption {
+    max-width: 330px;
+    margin-bottom: 0;
+}
+
+/* 第 15 幅原圖解析度較高，在桌面端保留略大的主視覺比例。 */
+.slide-item-landscape-featured {
+    grid-template-columns: minmax(0, 2.68fr) minmax(250px, 0.7fr);
+}
+
+.slide-item-landscape-featured .slide-image {
+    height: min(74vh, 790px);
+}
+
+.slide-item-landscape-featured .slide-image img {
+    max-height: min(74vh, 790px);
+}
+
 /* 細線方向符號與半透明圓框，靜止時也能辨識切換入口。 */
 .arrow-btn {
     position: absolute;
@@ -1496,6 +1547,28 @@ body.text-page-active {
         height: 60svh;
     }
 
+    .slide-item-landscape,
+    .slide-item-landscape-featured {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        gap: 26px;
+    }
+
+    .slide-item-landscape .slide-image,
+    .slide-item-landscape-featured .slide-image {
+        width: 100%;
+        height: auto;
+        min-height: 0;
+        aspect-ratio: 16 / 9;
+    }
+
+    .slide-item-landscape .slide-image img,
+    .slide-item-landscape-featured .slide-image img {
+        width: 100%;
+        height: 100%;
+        max-height: none;
+    }
+
 
     .slide-caption {
         width: 100%;
@@ -1524,6 +1597,10 @@ body.text-page-active {
         height: 44px;
         background: rgba(255, 253, 248, 0.88);
         opacity: 1;
+    }
+
+    #gallery-page:has(.slide-item-landscape.is-current) .arrow-btn {
+        top: calc(26.45vw + 8px);
     }
 
     .arrow-prev {
