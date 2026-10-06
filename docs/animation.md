@@ -4,23 +4,22 @@
 
 ## 動態原則
 
-- 整體應安靜、柔和、稍慢，像連續流動而不是 PPT。
-- 優先使用原地透明度、細微位移與柔光；避免大幅 3D 翻頁、硬切、快速彈跳與大量元素同時移動。
-- 動畫結束後的幾何位置必須穩定，不能靠動畫 transform 補救版面。
-- 所有長動畫都要能被切頁、狀態更新或 reduced-motion 安全終止。
+- 整體安靜、柔和、稍慢，動態用來建立環境感與閱讀回饋，不用來模擬投影片換頁。
+- 不做頁面離場、整頁上移或強制 scroll snap；作品只在有邊界的橫向展廳內換作。
+- 內容顯現以原地透明度為主；動畫停用時幾何位置必須完全正確。
+- 快速 hover、捲動、選單操作與 reduced-motion 都不能留下過期狀態。
 
-## 現有時序
+## 現有動態
 
-| 功能 | 時序 |
+| 功能 | 時序／行為 |
 | --- | --- |
-| 頁面離場 | 180ms，淡出並上移 6px |
-| 頁面進場 | 320ms，從下方 8px 淡入 |
-| 作品舊圖淡出 | 700ms |
-| 作品舊文案淡出 | 140ms |
-| 作品新文案淡入 | 延遲 140ms，持續 420ms |
-| 背景換色 | CSS 0.8s |
-| 小環葉片旋轉 | CSS 980ms |
-| 完成一輪光暈 | 900ms |
+| 章節導覽 | 一般模式原生 smooth scroll；reduced-motion 立即定位 |
+| 作品舊圖淡出 | 860ms，原地交疊 |
+| 舊／新文案 | 240ms 淡出；延遲 180ms、560ms 淡入 |
+| 展廳背景換色 | CSS 0.8s |
+| 進度環葉片 | CSS 980ms 轉到目前作品角度 |
+| 24→1 完成呼吸 | 900ms |
+| 捲動觸發換作 | 舊圖 520ms；新文案延遲 120ms、持續 380ms |
 | 選單面板開／關 | 650ms |
 | 選單項目進場 | 800ms；延遲 150–750ms |
 | 節氣名稱淡入 | 760ms |
@@ -29,43 +28,39 @@
 | 開場淡出 | 1100ms |
 | 音樂淡入 | 1800ms，至 0.22 |
 
-## 狀態鎖與取消
+資訊章節的內容只做透明度淡入，不再搭配上下位移。
 
-- 頁面：`isPageSwitching` 阻止重複切換，`try/finally` 取消 Web Animations 並恢復焦點。
-- 輪播：`isAnimating` 阻止連點；`turnVersion` 辨識過期動畫；`finishPageTurn()` 取消並重建唯一狀態。
-- 節氣：`solarPreviewVersion`、`solarTypingTimer`、`solarHoverTimer` 防止快速滑動產生殘字。
-- 音樂：`musicRequest` 使舊播放 promise／淡入 frame 不再更新目前狀態。
-- 理時序裝飾：使用單一 `requestAnimationFrame` 與 280ms rest timer，不建立持續追蹤迴圈。
+## 捲動更新與取消
 
-修改相關功能時，不可移除上述保護而只改視覺動畫。
+- scroll／resize／pageshow 只排入一個 `requestAnimationFrame`，由 `scrollFrame` 防止同一畫格重複計算。
+- `updateGalleryFromScroll()` 將黏著區的捲動進度映射到 24 個索引；快速捲動時取消上一段動畫並直接追上新索引。
+- 作品換作由 `isAnimating`、`turnVersion` 與 `turnAnimations` 管理；取消後由 `finishPageTurn()` 重建唯一目前作品。
+- `cycleRotation` 累積正負 15 度，避免第 24 件回第 1 件時視覺倒轉。
+- 節氣預覽保留 `solarPreviewVersion`、`solarTypingTimer`、`solarHoverTimer`，防止快速滑動產生殘字。
+- 音樂保留 `musicRequest`，避免舊播放 promise 或淡入 frame 回寫新狀態。
+- 理時序裝飾使用單一 `requestAnimationFrame` 與 rest timer，不建立持續追蹤迴圈。
 
-## 全域按鈕回饋
+## 全域按鈕與開場回應
 
-- 捕獲階段 click handler 對一般按鈕播放 220ms 的 `scale: 0.97 → 1`。
-- `#enterExhibition` 排除在外，避免破壞距離回應。
-- 箭頭本身用 `transform: translateY(-50%)` 定位，因此按壓回饋使用獨立 `scale` 動畫，避免覆蓋位置。
-
-## 開場距離回應
-
-- 指標距入口 320px 內，經 smoothstep 曲線換算 `--proximity`。
-- 接近時反應 450ms，遠離時 850ms；只縮放文字與調光，不移動實際按鈕 hit area。
-- 鍵盤 Tab 模式與指標模式分開；焦點可提供完整可見回饋。
-- 觸控不追蹤距離。
+- 一般按鈕點擊播放 220ms 的 `scale: 0.97 → 1`；`#enterExhibition` 排除。
+- 開場指標距入口 320px 內，經 smoothstep 曲線轉換亮度與文字縮放；不移動實際點擊區。
+- 接近反應 450ms，遠離 850ms；鍵盤、滑鼠與觸控路徑分開。
 
 ## reduced-motion
 
-- JavaScript 切頁、輪播與節氣逐字效果改為立即完成。
-- CSS 停用選單、按鈕、節氣環、完成光暈、開場霧、理時序裝飾等主要 transition／animation。
-- 模式在執行中變更時，輪播與理時序裝飾會立即清理。
+- 章節導覽立即定位。
+- 作品換作立即完成，但仍更新節氣、編號、環角度與可存取狀態。
+- 停用進度環旋轉過渡、選單、按鈕、節氣環、開場霧與理時序裝飾等主要 transition／animation。
+- 節氣文字直接完成，不逐字輸出。
 
 ## 修改檢查
 
-- 快速連點、快速 hover、切頁途中不留下殘影、舊文字或錯誤 z-index。
-- 動畫取消後 ARIA、`inert`、active class 與畫面一致。
+- 頁面可自然上下捲動；作品區黏著與解除時沒有突然抽動。
+- 快速切換或 24→1 時，進度環、節氣名稱與唯一目前作品保持同步。
+- 快速 hover 不留下殘影或舊文字。
 - 不用 transform 同時負責版面定位與多組動畫。
-- 瀏覽器不支援 Web Animations 時仍有正確最終畫面。
-- reduced-motion 不只是停動畫，也要保留完整功能。
+- reduced-motion 保留完整功能與內容。
 
 ## 更新此文件的時機
 
-修改任何動畫時間、緩動、狀態鎖、取消流程、距離／hover 回應或 reduced-motion 行為時更新。
+修改動畫時間、捲動顯現、節流、距離／hover 回應或 reduced-motion 行為時更新。

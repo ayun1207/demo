@@ -1,4 +1,6 @@
 // 24 張圖片對應的低飽和度背景色列表
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
 const backgroundColors = [
     "#EFECE6",
     "#E6EBE0",
@@ -143,6 +145,139 @@ async function switchPage(pageName) {
     }
 }
 
+/* 理時序的主要入口使用跨頁視覺延續；選單仍沿用一般切頁。 */
+async function enterGalleryFromIntro() {
+    const targetPage = document.getElementById('gallery-page');
+    const targetButton = document.querySelector('.nav-btn[data-page="gallery"]');
+    const currentPage = document.querySelector('.page-content.active');
+
+    if (!targetPage || !targetButton || !currentPage || isPageSwitching || currentPage === targetPage) return;
+    if (currentPage.id !== 'intro-page' || siteMenu.open || reducedMotion.matches || typeof targetPage.animate !== 'function') {
+        await switchPage('gallery');
+        return;
+    }
+
+    const introCopy = currentPage.querySelector('.intro-copy');
+    const sourceCycle = currentPage.querySelector('.solar-cycle');
+    const targetSlide = originalSlides[currentIndex];
+    const targetImage = targetSlide?.querySelector('.slide-image');
+    const targetCaption = targetSlide?.querySelector('.slide-caption');
+    const targetOrbit = targetSlide?.querySelector('.cycle-orbit');
+
+    if (!introCopy || !sourceCycle || !targetImage || !targetCaption || !targetOrbit) {
+        await switchPage('gallery');
+        return;
+    }
+
+    isPageSwitching = true;
+    finishPageTurn();
+    restIntroBreeze();
+    targetPage.classList.add('gallery-entry-stage');
+    targetPage.inert = true;
+    targetPage.setAttribute('aria-hidden', 'true');
+    void targetPage.offsetWidth;
+
+    const sourceRect = sourceCycle.getBoundingClientRect();
+    const targetRect = targetOrbit.getBoundingClientRect();
+    const sourceIsVisible = sourceRect.width > 0 && sourceRect.height > 0
+        && sourceRect.bottom > 0 && sourceRect.top < window.innerHeight;
+    const targetIsVisible = targetRect.width > 0 && targetRect.height > 0;
+
+    targetImage.style.opacity = '0';
+    targetCaption.style.opacity = '0';
+    targetOrbit.style.opacity = '0';
+    targetPage.style.backgroundColor = backgroundColors[currentIndex];
+
+    try {
+        if (sourceIsVisible && targetIsVisible) {
+            galleryEntryProxy = sourceCycle.cloneNode(true);
+            galleryEntryProxy.classList.add('solar-cycle-transition');
+            galleryEntryProxy.querySelectorAll('[id]').forEach(element => element.removeAttribute('id'));
+            galleryEntryProxy.setAttribute('aria-hidden', 'true');
+            galleryEntryProxy.inert = true;
+            Object.assign(galleryEntryProxy.style, {
+                left: `${sourceRect.left}px`,
+                top: `${sourceRect.top}px`,
+                width: `${sourceRect.width}px`,
+                height: `${sourceRect.height}px`
+            });
+            document.body.append(galleryEntryProxy);
+            sourceCycle.style.visibility = 'hidden';
+
+            const sourceCenterX = sourceRect.left + sourceRect.width / 2;
+            const sourceCenterY = sourceRect.top + sourceRect.height / 2;
+            const targetCenterX = targetRect.left + targetRect.width / 2;
+            const targetCenterY = targetRect.top + targetRect.height / 2;
+            const targetScale = targetRect.width / sourceRect.width;
+
+            galleryEntryAnimations.push(galleryEntryProxy.animate([
+                { transform: 'translate3d(0, 0, 0) scale(1)', opacity: 1, filter: 'blur(0)' },
+                {
+                    transform: `translate3d(${targetCenterX - sourceCenterX}px, ${targetCenterY - sourceCenterY}px, 0) scale(${targetScale})`,
+                    opacity: 0.22,
+                    filter: 'blur(1px)'
+                }
+            ], {
+                duration: 900,
+                easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+                fill: 'forwards'
+            }));
+        }
+
+        galleryEntryAnimations.push(
+            introCopy.animate([
+                { opacity: 1, transform: 'translateY(0)' },
+                { opacity: 0, transform: 'translateY(-4px)' }
+            ], { duration: 240, easing: 'ease-out', fill: 'forwards' }),
+            targetPage.animate([
+                { backgroundColor: 'rgba(239, 236, 230, 0)' },
+                { backgroundColor: backgroundColors[currentIndex] }
+            ], { duration: 900, easing: 'ease-in-out', fill: 'both' }),
+            targetImage.animate([
+                { opacity: 0, filter: 'blur(8px)', transform: 'scale(0.985)' },
+                { opacity: 1, filter: 'blur(0)', transform: 'scale(1)' }
+            ], {
+                duration: 760,
+                delay: 170,
+                easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+                fill: 'both'
+            }),
+            targetCaption.animate([
+                { opacity: 0 },
+                { opacity: 1 }
+            ], { duration: 420, delay: 500, easing: 'ease-out', fill: 'both' })
+        );
+
+        await Promise.all(galleryEntryAnimations.map(animation => animation.finished));
+    } catch {
+        // reduced-motion 在途中啟用或動畫被取消時，直接完成到作品頁。
+    } finally {
+        displayPage('gallery', targetPage, targetButton);
+        targetPage.classList.remove('gallery-entry-stage');
+        targetPage.inert = false;
+        targetPage.removeAttribute('aria-hidden');
+        targetPage.style.removeProperty('background-color');
+        targetImage.style.removeProperty('opacity');
+        targetCaption.style.removeProperty('opacity');
+        targetOrbit.style.removeProperty('opacity');
+        sourceCycle.style.removeProperty('visibility');
+        galleryEntryAnimations.forEach(animation => animation.cancel());
+        galleryEntryAnimations = [];
+        galleryEntryProxy?.remove();
+        galleryEntryProxy = null;
+
+        if (!reducedMotion.matches && typeof targetOrbit.animate === 'function') {
+            targetOrbit.animate([
+                { opacity: 0.2, filter: 'blur(1px)' },
+                { opacity: 1, filter: 'blur(0)' }
+            ], { duration: 260, easing: 'ease-out' });
+        }
+
+        isPageSwitching = false;
+        menuToggle.focus({ preventScroll: true });
+    }
+}
+
 /* =========================
    輪播初始化
 ========================= */
@@ -153,6 +288,8 @@ const totalSlides = originalSlides.length;
 let currentIndex = 0;
 let isAnimating = false;
 let turnAnimations = [];
+let galleryEntryAnimations = [];
+let galleryEntryProxy = null;
 let turnVersion = 0;
 let cycleRotation = 0;
 let cycleCompleteTimer;
@@ -161,7 +298,7 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 document.documentElement.style.setProperty('--cycle-angle', '0deg');
 
 function updateBackgroundColor() {
-    document.body.style.backgroundColor = backgroundColors[currentIndex];
+    document.getElementById('gallery-page')?.style.setProperty('--gallery-tone', backgroundColors[currentIndex]);
 }
 
 function finishPageTurn() {
@@ -180,7 +317,7 @@ function finishPageTurn() {
 }
 
 async function moveSlide(direction) {
-    if (isAnimating || !document.getElementById('gallery-page').classList.contains('active')) return;
+    if (isAnimating) return;
     if (direction !== 1 && direction !== -1) return;
 
     const previousIndex = currentIndex;
@@ -190,6 +327,7 @@ async function moveSlide(direction) {
 
     cycleRotation += direction * 15;
     document.documentElement.style.setProperty('--cycle-angle', `${cycleRotation}deg`);
+    updateGalleryMeta(currentIndex);
 
     if (!reducedMotion.matches && direction === 1 && previousIndex === totalSlides - 1) {
         clearTimeout(cycleCompleteTimer);
@@ -210,6 +348,7 @@ async function moveSlide(direction) {
 
     isAnimating = true;
     const version = ++turnVersion;
+    outgoing.classList.remove('is-current');
     outgoing.classList.add('is-turning');
     outgoing.setAttribute('aria-hidden', 'true');
     outgoing.inert = true;
@@ -226,15 +365,15 @@ async function moveSlide(direction) {
         outgoingImage.animate([
             { opacity: 1 },
             { opacity: 0 }
-        ], { duration: 700, easing: 'ease-in-out', fill: 'forwards' }),
+        ], { duration: 860, easing: 'ease-in-out', fill: 'forwards' }),
         outgoing.querySelector('.slide-caption').animate([
             { opacity: 1 },
             { opacity: 0 }
-        ], { duration: 140, easing: 'ease-out', fill: 'forwards' }),
+        ], { duration: 240, easing: 'ease-out', fill: 'forwards' }),
         incoming.querySelector('.slide-caption').animate([
             { opacity: 0 },
             { opacity: 1 }
-        ], { duration: 420, delay: 140, easing: 'ease-out', fill: 'both' })
+        ], { duration: 560, delay: 180, easing: 'ease-out', fill: 'both' })
     ];
     try {
         await Promise.all(turnAnimations.map(animation => animation.finished));
@@ -246,9 +385,267 @@ async function moveSlide(direction) {
 }
 
 reducedMotion.addEventListener('change', () => {
-    if (reducedMotion.matches) finishPageTurn();
+    if (reducedMotion.matches) {
+        finishPageTurn();
+        galleryEntryAnimations.forEach(animation => animation.cancel());
+    }
 });
 finishPageTurn();
+
+/* =========================
+   垂直章節與作品閱讀進度
+========================= */
+
+const pageSections = Array.from(document.querySelectorAll('.page-content'));
+const galleryProgressTerm = document.getElementById('galleryProgressTerm');
+const galleryProgressNumber = document.getElementById('galleryProgressNumber');
+const currentSectionNumber = document.getElementById('currentSectionNumber');
+const galleryPage = document.getElementById('gallery-page');
+const galleryExitButton = document.getElementById('galleryExit');
+let currentSection = 'intro';
+let scrollFrame = 0;
+let scrollSettleTimer;
+let lastGalleryScrollIndex = null;
+let galleryExitTimer;
+let galleryExitInProgress = false;
+
+function closeMenuImmediately() {
+    clearTimeout(menuCloseTimer);
+    if (siteMenu.open) siteMenu.close();
+    siteMenu.classList.remove('is-open');
+    document.body.classList.remove('menu-open');
+    menuToggle.setAttribute('aria-expanded', 'false');
+}
+
+function updateGalleryProgress(index) {
+    const boundedIndex = Math.max(0, Math.min(totalSlides - 1, index));
+    currentIndex = boundedIndex;
+    updateGalleryMeta(boundedIndex);
+    finishPageTurn();
+}
+
+function updateGalleryMeta(index) {
+    const boundedIndex = Math.max(0, Math.min(totalSlides - 1, index));
+    galleryProgressTerm.textContent = originalSlides[boundedIndex]?.querySelector('h2')?.textContent.trim() || '';
+    galleryProgressNumber.textContent = String(boundedIndex + 1).padStart(2, '0');
+    updateBackgroundColor();
+}
+
+async function showGalleryIndexFromScroll(index) {
+    const boundedIndex = Math.max(0, Math.min(totalSlides - 1, index));
+    if (boundedIndex === currentIndex) return;
+
+    const outgoing = originalSlides[currentIndex];
+    finishPageTurn();
+    currentIndex = boundedIndex;
+    cycleRotation = boundedIndex * 15;
+    document.documentElement.style.setProperty('--cycle-angle', `${cycleRotation}deg`);
+    updateGalleryMeta(boundedIndex);
+    const incoming = originalSlides[boundedIndex];
+
+    if (reducedMotion.matches || typeof outgoing.animate !== 'function') {
+        finishPageTurn();
+        return;
+    }
+
+    isAnimating = true;
+    const version = ++turnVersion;
+    outgoing.classList.remove('is-current');
+    outgoing.classList.add('is-turning');
+    outgoing.setAttribute('aria-hidden', 'true');
+    outgoing.inert = true;
+    incoming.classList.add('is-current');
+    incoming.setAttribute('aria-hidden', 'false');
+    incoming.inert = false;
+    outgoing.style.zIndex = '2';
+    incoming.style.zIndex = '1';
+
+    turnAnimations = [
+        outgoing.querySelector('.slide-image').animate([
+            { opacity: 1 },
+            { opacity: 0 }
+        ], { duration: 520, easing: 'ease-in-out', fill: 'forwards' }),
+        outgoing.querySelector('.slide-caption').animate([
+            { opacity: 1 },
+            { opacity: 0 }
+        ], { duration: 180, easing: 'ease-out', fill: 'forwards' }),
+        incoming.querySelector('.slide-caption').animate([
+            { opacity: 0 },
+            { opacity: 1 }
+        ], { duration: 380, delay: 120, easing: 'ease-out', fill: 'both' })
+    ];
+
+    try {
+        await Promise.all(turnAnimations.map(animation => animation.finished));
+    } catch {
+        // 快速捲動到另一節氣時，由下一次更新接手並整理狀態。
+    } finally {
+        if (version === turnVersion) finishPageTurn();
+    }
+}
+
+function updateGalleryFromScroll() {
+    if (reducedMotion.matches) return;
+    const rect = galleryPage.getBoundingClientRect();
+    const stickyOffset = window.innerWidth <= 768 ? 70 : (window.innerWidth <= 900 ? 82 : 0);
+    const visible = rect.bottom > stickyOffset && rect.top < window.innerHeight;
+    if (!visible) {
+        lastGalleryScrollIndex = null;
+        return;
+    }
+
+    const travel = Math.max(rect.height - window.innerHeight + stickyOffset, 1);
+    const rawProgress = Math.max(0, Math.min(1, (stickyOffset - rect.top) / travel));
+    const progress = Math.max(0, Math.min(1, (rawProgress - 0.06) / 0.88));
+    const targetIndex = Math.round(progress * (totalSlides - 1));
+    galleryPage.style.setProperty('--gallery-scroll-progress', progress.toFixed(4));
+
+    if (targetIndex === lastGalleryScrollIndex) return;
+    lastGalleryScrollIndex = targetIndex;
+    showGalleryIndexFromScroll(targetIndex);
+}
+
+function softenGalleryWheel(event) {
+    if (reducedMotion.matches || event.ctrlKey || !event.deltaY) return;
+    const rect = galleryPage.getBoundingClientRect();
+    const stickyOffset = window.innerWidth <= 768 ? 70 : (window.innerWidth <= 900 ? 82 : 0);
+    const pinned = rect.top <= stickyOffset + 2 && rect.bottom >= window.innerHeight - 2;
+    if (!pinned) return;
+
+    let delta = event.deltaY;
+    if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) delta *= 16;
+    else if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) delta *= window.innerHeight;
+
+    const largeGestureThreshold = Math.max(150, window.innerHeight * 0.18);
+    if (Math.abs(delta) <= largeGestureThreshold) return;
+
+    event.preventDefault();
+    const softenedStep = Math.min(132, window.innerHeight * 0.14);
+    window.scrollBy({ top: Math.sign(delta) * softenedStep, behavior: 'auto' });
+}
+
+galleryPage.addEventListener('wheel', softenGalleryWheel, { passive: false });
+
+function setCurrentSection(pageName) {
+    if (!pageName) return;
+    currentSection = pageName;
+    pageSections.forEach(section => {
+        section.classList.toggle('active', section.id === `${pageName}-page`);
+    });
+    document.querySelectorAll('.nav-btn').forEach(button => {
+        const active = button.dataset.page === pageName;
+        button.classList.toggle('active', active);
+        if (active) button.setAttribute('aria-current', 'page');
+        else button.removeAttribute('aria-current');
+    });
+
+    document.body.classList.toggle('intro-page-active', pageName === 'intro');
+    document.body.classList.toggle('gallery-section-active', pageName === 'gallery');
+    document.body.classList.toggle('text-page-active', pageName === 'text' || pageName === 'thanks');
+    document.getElementById('currentPageLabel').textContent = {
+        intro: '理時序',
+        gallery: '觀芳華',
+        text: '繪春信',
+        planning: '籌花事',
+        thanks: '謝花人'
+    }[pageName];
+    currentSectionNumber.textContent = {
+        intro: '01',
+        gallery: '02',
+        planning: '03',
+        text: '04',
+        thanks: '05'
+    }[pageName];
+    document.documentElement.style.setProperty('--section-marker-top', {
+        intro: '18%',
+        gallery: '36%',
+        planning: '54%',
+        text: '72%',
+        thanks: '90%'
+    }[pageName]);
+
+    if (pageName !== 'intro' && typeof restIntroBreeze === 'function') restIntroBreeze();
+    if (pageName === 'intro') document.body.style.backgroundColor = '#F3EFE5';
+    else if (pageName === 'gallery') updateGalleryMeta(currentIndex);
+    else document.body.style.backgroundColor = '#F5F2EC';
+}
+
+function navigateToSection(pageName) {
+    const targetPage = document.getElementById(`${pageName}-page`);
+    if (!targetPage) return;
+    closeMenuImmediately();
+    setCurrentSection(pageName);
+    targetPage.scrollIntoView({
+        behavior: reducedMotion.matches ? 'auto' : 'smooth',
+        block: 'start'
+    });
+}
+
+function leaveGallery() {
+    const targetPage = document.getElementById('planning-page');
+    if (!targetPage || galleryExitInProgress) return;
+
+    galleryExitInProgress = true;
+    galleryExitButton.disabled = true;
+    galleryPage.classList.add('is-exiting');
+    clearTimeout(galleryExitTimer);
+
+    const delay = reducedMotion.matches ? 0 : 360;
+    galleryExitTimer = setTimeout(() => {
+        const root = document.documentElement;
+        const previousScrollBehavior = root.style.scrollBehavior;
+        root.style.scrollBehavior = 'auto';
+        const headerOffset = window.innerWidth <= 768 ? 70 : (window.innerWidth <= 900 ? 82 : 0);
+        const targetTop = targetPage.getBoundingClientRect().top + window.scrollY - headerOffset;
+        window.scrollTo({ top: targetTop, behavior: 'auto' });
+        setCurrentSection('planning');
+        galleryPage.classList.remove('is-exiting');
+        galleryExitButton.disabled = false;
+        galleryExitInProgress = false;
+        requestAnimationFrame(() => {
+            root.style.scrollBehavior = previousScrollBehavior;
+            targetPage.focus({ preventScroll: true });
+        });
+    }, delay);
+}
+
+function updateScrollState() {
+    scrollFrame = 0;
+    const sectionLine = Math.min(window.innerHeight * 0.34, 300);
+    let visibleSection = pageSections[0];
+    pageSections.forEach(section => {
+        if (section.getBoundingClientRect().top <= sectionLine) visibleSection = section;
+    });
+    const scrollRoot = document.scrollingElement || document.documentElement;
+    const remainingScroll = scrollRoot.scrollHeight - scrollRoot.scrollTop - scrollRoot.clientHeight;
+    const finalSection = pageSections[pageSections.length - 1];
+    const finalSectionLine = Math.min(window.innerHeight * 0.55, 460);
+    const finalSectionReached = finalSection.getBoundingClientRect().top <= finalSectionLine;
+    const atPageEnd = remainingScroll <= Math.max(8, window.innerHeight * 0.01);
+    if (finalSectionReached || atPageEnd) visibleSection = finalSection;
+    setCurrentSection(visibleSection.id.replace('-page', ''));
+    updateGalleryFromScroll();
+
+}
+
+function queueScrollState() {
+    clearTimeout(scrollSettleTimer);
+    scrollSettleTimer = setTimeout(updateScrollState, 120);
+    if (scrollFrame) return;
+    scrollFrame = requestAnimationFrame(updateScrollState);
+}
+
+window.addEventListener('scroll', queueScrollState, { passive: true });
+window.addEventListener('scrollend', updateScrollState);
+window.addEventListener('resize', queueScrollState);
+window.addEventListener('pageshow', queueScrollState);
+reducedMotion.addEventListener('change', () => {
+    updateGalleryProgress(currentIndex);
+    queueScrollState();
+});
+
+updateGalleryProgress(0);
+queueScrollState();
 
 /* =========================
    序章節氣環預覽
@@ -263,6 +660,10 @@ let solarLeafAngle = 0;
 let solarTypingTimer;
 let solarHoverTimer;
 let solarPreviewVersion = 0;
+let solarAutoplayTimer;
+let solarAutoplayIndex = 0;
+const solarAutoplayInterval = 2200;
+const solarAutoplayPreviewDelay = 520;
 const solarTermNotes = [
     '風開始有了方向',
     '細雨輕輕落進春天',
@@ -296,26 +697,6 @@ const solarSeasonTrailColors = [
     'rgba(207, 174, 165, 0.58)',
     'rgba(171, 193, 208, 0.62)'
 ];
-
-originalSlides.forEach((slide, index) => {
-    const label = slide.querySelector('.caption-label');
-    if (!label) return;
-
-    const orbit = document.createElement('span');
-    orbit.className = 'cycle-orbit';
-    orbit.setAttribute('aria-hidden', 'true');
-
-    const marker = document.createElement('span');
-    marker.className = 'cycle-marker';
-    orbit.append(marker);
-
-    const termLabel = document.createElement('span');
-    termLabel.className = 'caption-term';
-    termLabel.textContent = solarTerms[index]?.textContent.trim() ?? '';
-
-    label.prepend(termLabel);
-    label.prepend(orbit);
-});
 
 function typeSolarText(target, text, delay, version, onComplete) {
     const characters = Array.from(text);
@@ -407,16 +788,39 @@ function clearSolarTermPreview() {
     solarCenterNote.textContent = '';
 }
 
-solarTerms.forEach((term, index) => {
-    term.addEventListener('pointerenter', () => {
-        clearTimeout(solarHoverTimer);
-        followSolarTerm(term, index);
-        solarHoverTimer = setTimeout(() => previewSolarTerm(term, index), 42);
-    });
-    term.addEventListener('pointerleave', () => clearTimeout(solarHoverTimer));
-});
+function stopSolarAutoplay() {
+    clearTimeout(solarAutoplayTimer);
+    clearTimeout(solarHoverTimer);
+    clearTimeout(solarTypingTimer);
+    solarAutoplayTimer = undefined;
+    solarPreviewVersion += 1;
+}
 
-solarCycle.addEventListener('pointerleave', clearSolarTermPreview);
+function runSolarAutoplayStep() {
+    if (document.hidden || entrance.open) return;
+    const index = solarAutoplayIndex;
+    const term = solarTerms[index];
+
+    clearTimeout(solarHoverTimer);
+    followSolarTerm(term, index);
+    solarHoverTimer = setTimeout(() => {
+        previewSolarTerm(term, index);
+    }, reducedMotion.matches ? 0 : solarAutoplayPreviewDelay);
+
+    solarAutoplayTimer = setTimeout(() => {
+        solarAutoplayIndex = (index + 1) % solarTerms.length;
+        runSolarAutoplayStep();
+    }, solarAutoplayInterval);
+}
+
+function startSolarAutoplay(reset = false) {
+    stopSolarAutoplay();
+    if (reset) {
+        solarAutoplayIndex = 0;
+        solarLeafAngle = 0;
+    }
+    if (!document.hidden && !entrance.open) runSolarAutoplayStep();
+}
 
 // 使用獨立的 scale 動畫，避免覆蓋箭頭本身的垂直定位。
 const buttonAnimations = new WeakMap();
@@ -479,6 +883,15 @@ let musicFadeFrame;
 let musicRequest = 0;
 let wantsMusic = false;
 
+function resetExhibitionToStart() {
+    const root = document.documentElement;
+    const previousScrollBehavior = root.style.scrollBehavior;
+    root.style.scrollBehavior = 'auto';
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    root.style.scrollBehavior = previousScrollBehavior;
+    setCurrentSection('intro');
+}
+
 musicToggle.hidden = !hasBackgroundMusic;
 document.getElementById('enterQuietly').hidden = !hasBackgroundMusic;
 document.getElementById('entranceMusicHint').hidden = !hasBackgroundMusic;
@@ -539,6 +952,7 @@ backgroundMusic.addEventListener('error', () => {
 async function enterExhibition(withMusic = true) {
     if (enteringExhibition) return;
     enteringExhibition = true;
+    resetExhibitionToStart();
     if (withMusic) startMusic();
     try {
         if (!reducedMotion.matches && typeof entrance.animate === 'function') {
@@ -547,9 +961,11 @@ async function enterExhibition(withMusic = true) {
             }).finished;
         }
     } finally {
+        resetExhibitionToStart();
         entrance.close();
         document.body.classList.remove('entrance-open');
         document.documentElement.classList.remove('entrance-open');
+        startSolarAutoplay(true);
         menuToggle.focus({ preventScroll: true });
     }
 }
@@ -620,13 +1036,30 @@ entrance.addEventListener('cancel', event => {
     event.preventDefault();
     enterExhibition(false);
 });
+resetExhibitionToStart();
 entrance.showModal();
 entrance.focus({ preventScroll: true });
 document.body.classList.add('entrance-open');
 document.documentElement.classList.add('entrance-open');
 requestAnimationFrame(() => {
+    resetExhibitionToStart();
     document.documentElement.classList.remove('entrance-pending');
     refreshEntranceProximity();
+});
+
+window.addEventListener('pageshow', () => {
+    if (!entrance.open) return;
+    resetExhibitionToStart();
+    requestAnimationFrame(resetExhibitionToStart);
+});
+
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stopSolarAutoplay();
+    else if (!entrance.open) startSolarAutoplay();
+});
+
+reducedMotion.addEventListener('change', () => {
+    if (!entrance.open && !document.hidden) startSolarAutoplay();
 });
 
 // 四季裝飾移至「理時序」，置於內容後方且不接收點擊或鍵盤焦點。

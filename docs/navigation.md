@@ -1,55 +1,54 @@
 # 頁面與導覽
 
-最後核對：2026-10-06
+最後核對：2026-10-07
 
-## 頁面對照
+## 頁面結構
 
-| page key | DOM | 選單／左上標籤 | 頁內內容 |
+網站是單一垂直長頁，五個章節依序存在同一個 `main` 中，不再是互斥顯示的滿版分頁。每章內容上方皆使用「兩位數編號＋章名」的小標格式。
+
+| section key | DOM | 左上標籤 | 內容 |
 | --- | --- | --- | --- |
-| `intro` | `#intro-page` | 理時序 | 大標仍為「文字」、引文、節氣環、觀芳華按鈕 |
-| `gallery` | `#gallery-page` | 觀芳華 | 24 張作品輪播 |
-| `text` | `#text-page` | 繪春信 | 「繪師資訊」標題，內容待補 |
-| `planning` | `#planning-page` | 籌花事 | 「籌畫細節」標題，內容待補 |
-| `thanks` | `#thanks-page` | 謝花人 | 「委託名單」標題，內容待補 |
+| `intro` | `#intro-page` | 理時序 | 大標、引文與節氣環 |
+| `gallery` | `#gallery-page` | 觀芳華 | 大標「作品展示」與獨立的 24 件橫向循環展廳 |
+| `planning` | `#planning-page` | 籌花事 | 籌畫細節，內容待補 |
+| `text` | `#text-page` | 繪春信 | 繪師資訊，內容待補 |
+| `thanks` | `#thanks-page` | 謝花人 | 委託名單，內容待補 |
 
 不要自行在選單名稱前加入數字，也不要混淆繪春信與謝花人。
+
+## 固定導覽與章節定位
+
+- 901px 以上 `.site-header` 是固定於左側的 92px 資訊軌；目前章名直排，底部顯示目前章節編號／05，右緣短標記會隨 01–05 章節位置移動。
+- 900px 以下改回上方橫條；一般高度 82px，768px 以下為 70px。
+- 選單呼叫 `navigateToSection(pageName)`，以 `scrollIntoView()` 捲到章節。
+- `prefers-reduced-motion: reduce` 下使用立即定位；一般模式柔和捲動。
+- `updateScrollState()` 以視窗上方約 34% 的閱讀線判斷目前章節，更新 `.active`、左上標籤、選單 `aria-current` 與 body 背景狀態。
+- `#currentSectionNumber` 會依理時序、觀芳華、籌花事、繪春信、謝花人更新為 01–05。
+- 最後一節進入視窗中段或抵達文件最底部時，會在 `scrollend` 與 120ms 停止捲動檢查中再次核對並判定為謝花人，避免快速捲動後停在 04；右緣標記此時移到 90%。
+- `.active` 只代表目前閱讀章節，不控制章節是否顯示。
+- 導覽不寫入 URL hash，也不建立瀏覽器歷史項目。
+- 瀏覽器的自動捲動位置復原已停用；重新整理後顯示封面，按下進入時會明確回到理時序頁首，不沿用重新整理前的位置。
 
 ## 選單
 
 - `#siteMenu` 是原生 `dialog`，左側 `.menu-panel` 寬度為 `min(340px, 82vw)`。
-- `openMenu()` 使用 `showModal()`，加上 `.is-open` 與 `body.menu-open`，同步 `aria-expanded=true`。
-- `closeMenu()` 先播放 650ms 收合；reduced-motion 下立即關閉。
-- 點擊 dialog 遮罩或按 Esc 會關閉。
-- `close` 事件負責清理 class、`aria-expanded` 並把焦點還給選單按鈕。
-- 五個 `.nav-btn` 在一般動態模式以 150、300、450、600、750ms 延遲依序進場。
+- `openMenu()` 使用 `showModal()`；`closeMenu()` 播放收合後關閉。
+- 點遮罩或按 Esc 可關閉；`close` 事件清理 class、同步 `aria-expanded=false` 並將焦點還給選單按鈕。
+- 選定章節時 `closeMenuImmediately()` 先完整關閉選單，再開始捲動。
 
-## 切頁
+## 資訊章節
 
-- `switchPage(pageName)` 驗證目標、目前頁面與 `isPageSwitching`。
-- 一般模式：目前頁 180ms 淡出並上移 6px，目標頁 320ms 從下方 8px 淡入。
-- reduced-motion 或不支援 Web Animations 時直接呼叫 `displayPage()`。
-- `displayPage()` 會：
-  - 完成／取消作品動畫。
-  - 清除所有頁與按鈕的 active 狀態。
-  - 更新 body 背景 class、左上頁名與 `aria-current`。
-  - 作品頁套用目前作品背景色；理時序設為 `#F3EFE5`。
-  - 捲回頁首並完整關閉選單。
-- 切頁結束後焦點回到 `#menuToggle`。
-
-## 資訊頁現況
-
-- 三頁都使用 `.info-page` 與 `.text-container`。
-- 繪春信與謝花人有半透明卡片、漸層背景及子元素進場動畫。
-- 籌花事目前沒有 `text-page-active` 背景，也不在上述兩頁的卡片／逐項動畫 selector 中。
-- 三頁內容尚未完成，不要代替使用者發明介紹、名單或企劃文字。
+- 三節都使用 `.info-page` 與 `.text-container`，位於作品長頁之後。
+- 三節使用章節編號、細欄線與交錯標題位置；進場只做淡入，不再上下位移。
+- 三節內容尚未完成，不要代替使用者發明介紹、名單或企劃文字。
 
 ## 修改檢查
 
-- 左上標籤、選單 active、`aria-current` 與顯示頁一致。
-- 遮罩、關閉鍵與 Esc 都能關閉選單。
-- 開關選單不造成水平位移；保留 `html { scrollbar-gutter: stable; }`。
-- 切頁時不殘留 `body.menu-open`、作品動畫或錯誤焦點。
+- 選單能定位到正確章節；理時序的下一章由自然下捲進入。作品章名旁另有「續往籌花事」，供使用者主動略過黏著行程。
+- 手動捲動時，左上標籤、選單 active 與 `aria-current` 同步。
+- 左側資訊軌或上方橫條不遮住章節內容；桌機 main 保留 92px 左側空間，平板與手機保留對應上方空間。
+- 選單開關不造成頁面水平位移，關閉後不殘留 `body.menu-open`。
 
 ## 更新此文件的時機
 
-新增／刪除頁面、改頁名、調整選單、切頁流程或資訊頁共用規則時更新。
+新增／刪除章節、改章節名稱、調整選單、固定 header 或捲動定位流程時更新。

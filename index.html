@@ -78,6 +78,9 @@
             <span></span><span></span><span></span>
         </button>
         <span class="current-page-label" id="currentPageLabel">理時序</span>
+        <span class="site-section-index" aria-hidden="true">
+            <span id="currentSectionNumber">01</span><span class="site-section-divider">／</span><span>05</span>
+        </span>
         <button id="musicToggle" class="music-toggle" type="button" aria-label="播放背景音樂" hidden>音樂 / 播放</button>
         <span id="musicStatus" class="music-status" role="status"></span>
     </header>
@@ -89,11 +92,11 @@
             </div>
             
             <nav class="menu-navigation" aria-label="網站導覽">
-                <button class="nav-btn active" type="button" data-page="intro" aria-current="page" onclick="switchPage('intro')">理時序<span class="menu-arrow" aria-hidden="true"></span></button>
-                <button class="nav-btn" type="button" data-page="gallery" onclick="switchPage('gallery')">觀芳華<span class="menu-arrow" aria-hidden="true"></span></button>
-                <button class="nav-btn" type="button" data-page="text" onclick="switchPage('text')">繪春信<span class="menu-arrow" aria-hidden="true"></span></button>
-                <button class="nav-btn" type="button" data-page="planning" onclick="switchPage('planning')">籌花事<span class="menu-arrow" aria-hidden="true"></span></button>
-                <button class="nav-btn" type="button" data-page="thanks" onclick="switchPage('thanks')">謝花人<span class="menu-arrow" aria-hidden="true"></span></button>
+                <button class="nav-btn active" type="button" data-page="intro" aria-current="page" onclick="navigateToSection('intro')">理時序<span class="menu-arrow" aria-hidden="true"></span></button>
+                <button class="nav-btn" type="button" data-page="gallery" onclick="navigateToSection('gallery')">觀芳華<span class="menu-arrow" aria-hidden="true"></span></button>
+                <button class="nav-btn" type="button" data-page="planning" onclick="navigateToSection('planning')">籌花事<span class="menu-arrow" aria-hidden="true"></span></button>
+                <button class="nav-btn" type="button" data-page="text" onclick="navigateToSection('text')">繪春信<span class="menu-arrow" aria-hidden="true"></span></button>
+                <button class="nav-btn" type="button" data-page="thanks" onclick="navigateToSection('thanks')">謝花人<span class="menu-arrow" aria-hidden="true"></span></button>
             </nav>
             
         </div>
@@ -101,10 +104,13 @@
 
     <main>
         <!-- 理時序：Splash 之後先以文字建立企劃的世界觀，再進入作品展示。 -->
-        <section id="intro-page" class="page-content intro-page active" aria-labelledby="introTitle">
+        <section id="intro-page" class="page-content intro-page active" aria-labelledby="introSectionLabel introTitle">
             <div class="intro-layout">
                 <div class="intro-copy">
-                    <h1 id="introTitle">文字</h1>
+                    <p id="introSectionLabel" class="section-label">
+                        <span>01</span><span>理時序</span>
+                    </p>
+                    <h1 id="introTitle">四時流轉</h1>
                     <div class="intro-rule" aria-hidden="true"></div>
                     <p class="intro-lead">
                         兩維之間，九十一度也，十六分度之五，<br>
@@ -114,13 +120,9 @@
                     <p class="intro-description">
                         
                     </p>
-                    <button class="intro-enter-gallery" type="button" onclick="switchPage('gallery')">
-                        <span>觀芳華</span>
-                        <span aria-hidden="true">→</span>
-                    </button>
                 </div>
 
-                <div class="solar-cycle" aria-label="二十四節氣循環圖">
+                <div class="solar-cycle" aria-label="二十四節氣自動循環圖">
                     <div class="solar-ring" aria-hidden="true"></div>
                     <div class="solar-axis solar-axis-vertical" aria-hidden="true"></div>
                     <div class="solar-axis solar-axis-horizontal" aria-hidden="true"></div>
@@ -163,22 +165,45 @@
             </div>
         </section>
 
-        <!-- 作品展示頁 -->
-        <section id="gallery-page" class="page-content">
-            <button class="arrow-btn arrow-prev" type="button" onclick="moveSlide(-1)" aria-label="上一張作品" title="上一張作品">
-                <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-                    <path d="M25 16H7M14 9l-7 7 7 7" />
-                </svg>
-            </button>
+        <!-- 作品展示：嵌在長頁中的橫向循環展廳。 -->
+        <section id="gallery-page" class="page-content" aria-labelledby="galleryLabel galleryTitle">
+            <div class="gallery-sticky-shell">
+                <div class="gallery-section-heading">
+                    <p id="galleryLabel" class="section-label">
+                        <span>02</span><span>觀芳華</span>
+                    </p>
+                    <h2 id="galleryTitle">作品展示</h2>
+                    <div class="gallery-heading-aside">
+                        <span class="gallery-range" aria-hidden="true">01—24</span>
+                        <button id="galleryExit" class="gallery-exit" type="button" onclick="leaveGallery()">
+                            續往籌花事
+                        </button>
+                    </div>
+                </div>
 
-            <div class="carousel-viewport">
+                <div class="gallery-stage">
+                <button class="arrow-btn arrow-prev" type="button" onclick="moveSlide(-1)" aria-label="上一張作品" title="上一張作品">
+                    <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                        <path d="M25 16H7M14 9l-7 7 7 7" />
+                    </svg>
+                </button>
+
+                <aside class="gallery-scroll-progress" aria-hidden="true">
+                    <span class="cycle-orbit gallery-progress-orbit"><span class="cycle-marker"></span></span>
+                    <span class="gallery-progress-copy">
+                        <span id="galleryProgressTerm" class="gallery-progress-term">立春</span>
+                        <span id="galleryProgressNumber" class="gallery-progress-number">01</span>
+                    </span>
+                </aside>
+
+                <div class="carousel-viewport">
                 <div class="carousel-slide" id="carouselSlide">
                     <!-- 圖片 1 至 24 -->
                     <figure class="slide-item">
                         <div class="slide-image"><img src="images/photo1.png" alt="圖片 1"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">01</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>立春</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
@@ -186,7 +211,7 @@
                         <div class="slide-image"><img src="images/photo2.png" alt="圖片 2"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">02</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>雨水</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
@@ -194,7 +219,7 @@
                         <div class="slide-image"><img src="images/photo3.jpg" alt="圖片 3"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">03</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>驚蟄</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
@@ -202,7 +227,7 @@
                         <div class="slide-image"><img src="images/photo4.jpg" alt="圖片 4"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">04</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>春分</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
@@ -210,7 +235,7 @@
                         <div class="slide-image"><img src="images/photo5.jpg" alt="圖片 5"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">05</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>清明</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
@@ -218,7 +243,7 @@
                         <div class="slide-image"><img src="images/photo6.jpg" alt="圖片 6"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">06</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>穀雨</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
@@ -226,7 +251,7 @@
                         <div class="slide-image"><img src="images/photo7.jpg" alt="圖片 7"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">07</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>立夏</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
@@ -234,7 +259,7 @@
                         <div class="slide-image"><img src="images/photo8.jpg" alt="圖片 8"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">08</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>小滿</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
@@ -242,7 +267,7 @@
                         <div class="slide-image"><img src="images/photo9.jpg" alt="圖片 9"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">09</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>芒種</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
@@ -250,7 +275,7 @@
                         <div class="slide-image"><img src="images/photo10.jpg" alt="圖片 10"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">10</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>夏至</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
@@ -258,7 +283,7 @@
                         <div class="slide-image"><img src="images/photo11.jpg" alt="圖片 11"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">11</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>小暑</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
@@ -266,7 +291,7 @@
                         <div class="slide-image"><img src="images/photo12.jpg" alt="圖片 12"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">12</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>大暑</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
@@ -274,7 +299,7 @@
                         <div class="slide-image"><img src="images/photo13.jpg" alt="圖片 13"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">13</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>立秋</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
@@ -282,7 +307,7 @@
                         <div class="slide-image"><img src="images/photo14.jpg" alt="圖片 14"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">14</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>處暑</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
@@ -290,7 +315,7 @@
                         <div class="slide-image"><img src="images/photo15.jpg" alt="圖片 15"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">15</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>白露</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
@@ -298,7 +323,7 @@
                         <div class="slide-image"><img src="images/photo16.jpg" alt="圖片 16"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">16</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>秋分</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
@@ -306,7 +331,7 @@
                         <div class="slide-image"><img src="images/photo17.jpg" alt="圖片 17"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">17</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>寒露</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
@@ -314,7 +339,7 @@
                         <div class="slide-image"><img src="images/photo18.jpg" alt="圖片 18"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">18</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>霜降</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
@@ -322,7 +347,7 @@
                         <div class="slide-image"><img src="images/photo19.jpg" alt="圖片 19"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">19</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>立冬</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
@@ -330,7 +355,7 @@
                         <div class="slide-image"><img src="images/photo20.jpg" alt="圖片 20"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">20</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>小雪</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
@@ -338,7 +363,7 @@
                         <div class="slide-image"><img src="images/photo21.jpg" alt="圖片 21"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">21</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>大雪</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
@@ -346,7 +371,7 @@
                         <div class="slide-image"><img src="images/photo22.jpg" alt="圖片 22"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">22</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>冬至</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
@@ -354,7 +379,7 @@
                         <div class="slide-image"><img src="images/photo23.jpg" alt="圖片 23"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">23</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>小寒</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
@@ -362,36 +387,48 @@
                         <div class="slide-image"><img src="images/photo24.jpg" alt="圖片 24"></div>
                         <figcaption class="slide-caption">
                             <p class="caption-label"><span class="caption-pagination"><span class="caption-number">24</span></span></p>
-                            <h2>節氣</h2>
+                            <h2>大寒</h2>
                             <p class="caption-description">在這裡寫下這張作品的故事，<br>或是一句想留給看見它的人的話。</p>
                         </figcaption>
                     </figure>
                 </div>
             </div>
 
-            <button class="arrow-btn arrow-next" type="button" onclick="moveSlide(1)" aria-label="下一張作品" title="下一張作品">
-                <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-                    <path d="M7 16h18M18 9l7 7-7 7" />
-                </svg>
-            </button>
+                <button class="arrow-btn arrow-next" type="button" onclick="moveSlide(1)" aria-label="下一張作品" title="下一張作品">
+                    <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                        <path d="M7 16h18M18 9l7 7-7 7" />
+                    </svg>
+                </button>
+                </div>
+            </div>
+
         </section>
 
-        <!-- 繪春信：可在這裡補上繪師介紹與連結。 -->
-        <section id="text-page" class="page-content info-page" aria-labelledby="artistTitle">
+        <!-- 籌花事：可在這裡補上企劃緣起與製作過程。 -->
+        <section id="planning-page" class="page-content info-page" aria-labelledby="planningLabel planningTitle" tabindex="-1">
             <div class="text-container">
+                <p id="planningLabel" class="section-label">
+                    <span>03</span><span>籌花事</span>
+                </p>
+                <h1 id="planningTitle">籌畫細節</h1>
+                <!-- 可在這裡加入企劃緣起、製作過程與參與名單。 -->
+            </div>
+        </section>
+        <!-- 繪春信：可在這裡補上繪師介紹與連結。 -->
+        <section id="text-page" class="page-content info-page" aria-labelledby="artistLabel artistTitle">
+            <div class="text-container">
+                <p id="artistLabel" class="section-label">
+                    <span>04</span><span>繪春信</span>
+                </p>
                 <h1 id="artistTitle">繪師資訊</h1>
                 <!-- 可在這裡補上繪師介紹、社群帳號與作品連結。 -->
             </div>
         </section>
-        <section id="planning-page" class="page-content info-page" aria-labelledby="planningTitle">
+        <section id="thanks-page" class="page-content info-page" aria-labelledby="thanksLabel thanksTitle">
             <div class="text-container">
-                <h1 id="planningTitle">籌畫細節</h1>
-                
-                <!-- 可在這裡加入企劃緣起、製作過程與參與名單。 -->
-            </div>
-        </section>
-        <section id="thanks-page" class="page-content info-page" aria-labelledby="thanksTitle">
-            <div class="text-container">
+                <p id="thanksLabel" class="section-label">
+                    <span>05</span><span>謝花人</span>
+                </p>
                 <h1 id="thanksTitle">委託名單</h1>
                 <!-- 原先放在繪春信頁的委託名單，之後可在此補上完整名單。 -->
             </div>

@@ -1,63 +1,61 @@
 # 響應式與無障礙
 
-最後核對：2026-10-06
+最後核對：2026-10-07
 
 ## 主要斷點
 
 | 條件 | 主要變化 |
 | --- | --- |
 | 769–1100px | 理時序兩欄縮窄，節氣環最大約 450px |
-| 769–900px | 理時序改為單欄並允許垂直捲動 |
-| 768px 以下 | 理時序單欄；作品改上下排列；作品頁允許垂直捲動 |
+| 769–900px | 理時序改為單欄 |
+| 901px 以上 | 導覽改為 92px 左側常駐資訊軌；作品黏在視窗頂端 |
+| 769–900px | 使用 82px 上方資訊列；作品黏著位置避開該橫條 |
+| 768px 以下 | 上方資訊列降為 70px；展廳內作品改為圖片在上、文字在下 |
 | 600px 以下 | 開場四季元素縮放／移位；理時序動態裝飾隱藏偶數項 |
-| `prefers-reduced-motion: reduce` | 停用主要位移、逐字、呼吸、霧與互動動畫 |
+| `prefers-reduced-motion: reduce` | 停用主要位移、逐字、霧、進場與互動動畫 |
 
-## 高度單位
+## 垂直閱讀與高度
 
-- 開場同時提供 `100vh` 與 `100dvh`。
-- 手機一般作品圖片同時提供 `60vh` 與 `60svh`，後者覆蓋前者。
-- 不要只留下新 viewport 單位；保留前一行作舊瀏覽器回退。
+- 主章節使用一般文件流且沒有 scroll snap；只有觀芳華使用長區段加 `position: sticky` 建立停留式敘事。
+- 開場仍使用 `100vh` 與 `100dvh`，因它是唯一真正滿版的 dialog。
+- 理時序桌機至少為 `calc(100svh - 82px)`；手機解除最低滿版高度，讓內容自然撐開。
+- 桌機 main 保留 92px 左側空間；900px 以下則對應 82px／70px 上方資訊列。
 
 ## 手機版
 
-- 理時序與作品頁皆可垂直捲動；不要以全域 overflow 阻止內容到達。
+- 全站章節使用垂直捲動；觀芳華展廳內仍可水平滑動換作。
 - 理時序強制 `<br>` 在 768px 以下隱藏，引文自然換行。
-- 一般作品圖高 60svh；橫式 9、15、22 以 16:9 寬幅顯示。
-- 作品文案最大 440px，靠右對齊於內容寬度內。
-- 箭頭至少 44×44px；一般作品對準 60svh 中心，橫式作品對準橫幅中心。
-- 觸控滑動只在水平位移超過 50px 且大於垂直位移時換圖。
+- 一般與橫式作品皆依原比例使用展廳寬度，文案接在圖下。
+- 作品文案最多為展廳內容寬度的 88%，靠右對齊。
+- 作品進度環位於展廳右上，不固定在整個瀏覽器視窗。
+- 展廳使用 `touch-action: pan-y`，上下捲動不應被誤判成換作；水平滑動超過 50px 才切換。
+- 「續往籌花事」是原生按鈕；定位完成後焦點交給帶 `tabindex="-1"` 的 `#planning-page`，不讓鍵盤焦點留在已離開的黏著展廳。
+- reduced-motion 下展廳取消 sticky 與數個視窗高度的捲動行程，避免被迫長距離捲動。
 
 ## Dialog 與焦點
 
 - 開場與選單都使用原生 `dialog`／`showModal()`。
-- 開場以 `aria-labelledby`、`aria-describedby` 指向標題與副標。
-- 選單以 `aria-labelledby="menuTitle"` 宣告，但目前 HTML 中沒有 `id="menuTitle"` 元素；這是需後續處理的語意缺口。
-- 選單關閉後焦點回 `#menuToggle`，且同步 `aria-expanded=false`。
-- 開場關閉後焦點也回選單按鈕。
-- Esc 在選單關閉選單；在開場則以靜音方式進入，而不是直接讓 dialog 消失。
+- 開場使用 `aria-labelledby`、`aria-describedby`；Esc 以靜音方式進入。
+- 選單的 `aria-labelledby="menuTitle"` 目前仍缺少對應元素，是待處理語意缺口。
+- 選單與開場關閉後，焦點回到 `#menuToggle`。
+- 選單按鈕保留 `aria-controls`、`aria-expanded`；目前章節以 `aria-current="page"` 標示。
 
-## 目前 ARIA 與互動狀態
+## 作品可存取性
 
-- 選單按鈕有 `aria-controls`、`aria-expanded`；目前頁的 nav button 有 `aria-current="page"`。
-- 左右箭頭有 `aria-label`、`title`，SVG 為 `aria-hidden` 且不可聚焦。
-- 非目前作品設為 `aria-hidden=true` 及 `inert=true`。
-- 裝飾層大多為 `aria-hidden` 或由 JavaScript 設定 `inert`，且不接收 pointer events。
-- 節氣環整體有 `aria-label`，但個別節氣目前是不可聚焦的 `<span>`，只有 pointer hover 預覽。
-- 圖片 `alt` 目前仍是暫時文字，正式上線前必須補寫。
-
-## 焦點樣式
-
-- 選單、導覽、箭頭、入口與音樂控制皆有 `:focus-visible` 規則。
-- 不要以 `outline: none` 移除焦點而不提供替代；開場按鈕目前由子文字的光影提供 focus-visible 回饋。
+- 24 件作品保留正常 DOM 順序；非目前作品設為 `aria-hidden` 與 `inert`，換作完成後只留下唯一可讀作品。
+- 展廳進度環是重複性的視覺提示，設為 `aria-hidden=true`；正式節氣名稱仍存在目前作品的 `h2`。
+- 裝飾層大多為 `aria-hidden` 或 `inert`，且不接收 pointer events。
+- 圖片 `alt` 仍是暫時文字，正式上線前必須補寫。
+- 理時序個別節氣仍是不可聚焦的 `<span>`，只有 pointer hover 預覽，這是既有可存取性缺口。
 
 ## 修改檢查
 
-- 320px 左右窄寬、一般手機、平板與大桌面皆能看到完整主要內容。
-- 鍵盤可開關選單、切頁與操作箭頭；焦點不進入隱藏作品。
+- 約 320px 窄寬、一般手機、平板與大桌面都能到達所有內容。
+- 固定 header 不遮住導覽目標；頁面不產生水平捲軸。
+- 鍵盤可開關選單並定位章節；焦點不會因捲動狀態更新而被搶走。
 - 使用 Esc、遮罩與關閉鈕後 class、ARIA 與焦點皆正確。
-- 觸控上下捲動不誤觸換圖。
-- reduced-motion 下沒有被延遲動畫卡住的功能。
+- reduced-motion 下沒有被延遲動畫卡住的內容。
 
 ## 更新此文件的時機
 
-修改斷點、viewport 單位、手機版面、觸控手勢、dialog、焦點、ARIA、`inert` 或 reduced-motion 時更新。
+修改斷點、固定 header、手機版面、捲動方式、dialog、焦點、ARIA、`inert` 或 reduced-motion 時更新。
