@@ -14,6 +14,7 @@
 | [開場與背景](background.md) | 封面、四季裝飾、紙墨霧光、全站與理時序背景、音樂入口 | 修改封面、背景、四季元素、霓光、雲霧、紙張或音樂入口時 |
 | [二十四節氣環](solar-cycle.md) | 環的結構、配色、中央文字、預覽資料與滑鼠跟隨 | 修改理時序、節氣名稱、中心內容、環動畫或節氣短句時 |
 | [橫向循環作品展廳](gallery.md) | 24 件作品、展廳邊界、流轉循環、橫直式特例、進度環、切換與滑動 | 修改作品圖片、文案、展廳排版、輪播、箭頭或循環時 |
+| [寄語章節](messages.md) | 多人短句卡片、署名、可變數量與交錯排列 | 修改寄語人數、卡片排版、留言文字或署名時 |
 | [動畫與互動](animation.md) | 時序、Web Animations、狀態鎖、取消機制與動態原則 | 調整速度、淡入淡出、hover、轉場或追查殘影／競態時 |
 | [響應式與無障礙](responsive-accessibility.md) | 斷點、手機配置、觸控、鍵盤、dialog、reduced-motion | 修改手機、平板、焦點、ARIA、捲動或無障礙行為時 |
 | [內容與素材](content-assets.md) | 文案狀態、圖片與字體、素材使用情況、音樂與上線資產清單 | 替換圖片、字體、文案、音訊或處理效能時 |
@@ -23,6 +24,7 @@
 - 「調整封面四季圖樣」：`background.md`；若涉及動態，再讀 `animation.md`。
 - 「修改理時序的環」：`solar-cycle.md`；若涉及手機，再讀 `responsive-accessibility.md`。
 - 「替換第 N 張作品」：`gallery.md` + `content-assets.md`。
+- 「增減寄語或調整留言卡片」：`messages.md`；若涉及手機排列，再讀 `responsive-accessibility.md`。
 - 「調整換圖速度或殘影」：`animation.md` + `gallery.md`。
 - 「改選單或新增頁面」：`navigation.md` + `architecture.md`。
 - 「整理目前還缺什麼」：只讀 `current-state.md`；需要素材細節時再讀 `content-assets.md`。

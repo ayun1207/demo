@@ -1,11 +1,13 @@
 # 專案架構
 
+> 寄語章節目前不是無限延伸的靜態列表：`script.js` 會把卡片每四人分組，透過左右控制與觸控橫滑循環切換。相關結構與維護方式以 `docs/messages.md` 為準。
+
 最後核對：2026-10-06
 
 ## 技術型態
 
 - 無框架、無 bundler、無套件管理器的靜態網站。
-- `index.html` 提供全部章節結構與內容；`style.css` 負責版面、斷點及 CSS 動畫；`script.js` 負責選單、捲動狀態、節氣預覽、開場、音樂與滑鼠回應。
+- `index.html` 提供全部章節結構與內容；`style.css` 負責版面、斷點及 CSS 動畫；`script.js` 負責選單、捲動狀態、節氣自動輪轉、開場、音樂與滑鼠回應。
 - `images/` 與 `fonts/` 為本機素材，沒有外部 CDN 字體依賴。
 
 ## DOM 與閱讀順序
@@ -46,7 +48,7 @@ body
 | `cycleRotation` | 保存循環累積角度，讓 24→1 延續到 360 度 |
 | `scrollFrame` | 合併連續 scroll／resize 更新 |
 | `lastGalleryScrollIndex` | 避免同一捲動區間重複觸發相同作品 |
-| `solarPreviewVersion` / timers | 防止節氣預覽的舊文字計時器回寫 |
+| `solarPreviewVersion` / autoplay timers | 管理節氣自動輪轉並防止舊文字計時器回寫 |
 | `enteringExhibition` | 防止重複關閉開場 |
 | `musicRequest` / `wantsMusic` | 管理播放請求與淡入取消 |
 
@@ -71,7 +73,7 @@ body
 - `.page-content.active`：目前閱讀章節。
 - `.slide-item.is-current` / `.is-turning`：目前作品與正離場作品；其他作品為 `aria-hidden` 且 `inert`。
 - `body.cycle-complete`：正向從第 24 件回到第 1 件的短暫完成狀態。
-- `.solar-cycle.is-previewing` / `.has-preview`：理時序節氣預覽狀態。
+- `.solar-cycle.is-previewing` / `.has-preview`：理時序自動輪轉時的目前節氣與中央文字狀態。
 
 ## 技術決策
 
@@ -81,6 +83,13 @@ body
 - 理時序使用偏心雙欄並縮短首章高度；三個資訊章節使用章節序號、欄線與交錯標題，不以置中卡片作為預設模板。
 - 動畫不負責版面定位；內容本身須在動畫停用時仍完整可讀。
 - 不加入作品快速跳轉、畫框、襯紙或強烈整頁擦拭效果。
+
+## 寄語章節擴充
+
+- `#messages-page` 是位於 `#text-page` 與 `#thanks-page` 之間的第 05 章，導覽 key 為 `messages`。
+- 寄語不使用 JavaScript 輪播；所有 `.message-card` 都保留在正常文件流，由 CSS Grid 與循環的 `nth-child` 規則形成交錯排列。
+- 實際人數變動時只增減完整卡片節點；章節高度由內容自然撐開，謝花人為第 06 章。
+- 詳細卡片結構與響應式規則見 `messages.md`。
 
 ## 更新此文件的時機
 

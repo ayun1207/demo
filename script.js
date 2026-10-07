@@ -77,11 +77,11 @@ function displayPage(pageName, targetPage, targetButton) {
     });
     targetPage.classList.add('active');
     document.body.classList.toggle('intro-page-active', pageName === 'intro');
-    document.body.classList.toggle('text-page-active', pageName === 'text' || pageName === 'thanks');
+    document.body.classList.toggle('text-page-active', pageName === 'text' || pageName === 'messages' || pageName === 'thanks');
     targetButton.classList.add('active');
     targetButton.setAttribute('aria-current', 'page');
     document.getElementById('currentPageLabel').textContent = {
-        intro: '理時序', gallery: '觀芳華', text: '繪春信', planning: '籌花事', thanks: '謝花人'
+        intro: '理時序', gallery: '觀芳華', text: '繪春信', planning: '籌花事', messages: '寄語', thanks: '謝花人'
     }[pageName];
     if (pageName === 'gallery') {
         updateBackgroundColor();
@@ -352,7 +352,8 @@ async function moveSlide(direction) {
     outgoing.classList.add('is-turning');
     outgoing.setAttribute('aria-hidden', 'true');
     outgoing.inert = true;
-    incoming.classList.add('is-current');
+        incoming.classList.add('is-current');
+        incoming.style.position = 'absolute';
     incoming.setAttribute('aria-hidden', 'false');
     incoming.inert = false;
     const outgoingImage = outgoing.querySelector('.slide-image');
@@ -399,7 +400,6 @@ finishPageTurn();
 const pageSections = Array.from(document.querySelectorAll('.page-content'));
 const galleryProgressTerm = document.getElementById('galleryProgressTerm');
 const galleryProgressNumber = document.getElementById('galleryProgressNumber');
-const currentSectionNumber = document.getElementById('currentSectionNumber');
 const galleryPage = document.getElementById('gallery-page');
 const galleryExitButton = document.getElementById('galleryExit');
 let currentSection = 'intro';
@@ -541,27 +541,22 @@ function setCurrentSection(pageName) {
 
     document.body.classList.toggle('intro-page-active', pageName === 'intro');
     document.body.classList.toggle('gallery-section-active', pageName === 'gallery');
-    document.body.classList.toggle('text-page-active', pageName === 'text' || pageName === 'thanks');
+    document.body.classList.toggle('text-page-active', pageName === 'text' || pageName === 'messages' || pageName === 'thanks');
     document.getElementById('currentPageLabel').textContent = {
         intro: '理時序',
         gallery: '觀芳華',
         text: '繪春信',
         planning: '籌花事',
+        messages: '寄語',
         thanks: '謝花人'
     }[pageName];
-    currentSectionNumber.textContent = {
-        intro: '01',
-        gallery: '02',
-        planning: '03',
-        text: '04',
-        thanks: '05'
-    }[pageName];
     document.documentElement.style.setProperty('--section-marker-top', {
-        intro: '18%',
-        gallery: '36%',
-        planning: '54%',
-        text: '72%',
-        thanks: '90%'
+        intro: '14%',
+        gallery: '30%',
+        planning: '46%',
+        text: '62%',
+        messages: '78%',
+        thanks: '92%'
     }[pageName]);
 
     if (pageName !== 'intro' && typeof restIntroBreeze === 'function') restIntroBreeze();
@@ -586,26 +581,33 @@ function leaveGallery() {
     if (!targetPage || galleryExitInProgress) return;
 
     galleryExitInProgress = true;
-    galleryExitButton.disabled = true;
+    galleryExitButton.setAttribute('aria-busy', 'true');
     galleryPage.classList.add('is-exiting');
     clearTimeout(galleryExitTimer);
 
-    const delay = reducedMotion.matches ? 0 : 360;
+    const delay = reducedMotion.matches ? 0 : 120;
     galleryExitTimer = setTimeout(() => {
-        const root = document.documentElement;
-        const previousScrollBehavior = root.style.scrollBehavior;
-        root.style.scrollBehavior = 'auto';
-        const headerOffset = window.innerWidth <= 768 ? 70 : (window.innerWidth <= 900 ? 82 : 0);
-        const targetTop = targetPage.getBoundingClientRect().top + window.scrollY - headerOffset;
-        window.scrollTo({ top: targetTop, behavior: 'auto' });
-        setCurrentSection('planning');
-        galleryPage.classList.remove('is-exiting');
-        galleryExitButton.disabled = false;
-        galleryExitInProgress = false;
-        requestAnimationFrame(() => {
-            root.style.scrollBehavior = previousScrollBehavior;
+        let hasSettled = false;
+        const finishGalleryExit = () => {
+            if (hasSettled) return;
+            hasSettled = true;
+            clearTimeout(galleryExitTimer);
+            setCurrentSection('planning');
+            galleryPage.classList.remove('is-exiting');
+            galleryExitButton.removeAttribute('aria-busy');
+            galleryExitInProgress = false;
             targetPage.focus({ preventScroll: true });
-        });
+        };
+
+        if (reducedMotion.matches) {
+            targetPage.scrollIntoView({ behavior: 'auto', block: 'start' });
+            finishGalleryExit();
+            return;
+        }
+
+        window.addEventListener('scrollend', finishGalleryExit, { once: true });
+        targetPage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        galleryExitTimer = setTimeout(finishGalleryExit, 1200);
     }, delay);
 }
 
@@ -821,6 +823,144 @@ function startSolarAutoplay(reset = false) {
     }
     if (!document.hidden && !entrance.open) runSolarAutoplayStep();
 }
+
+/* =========================
+   後段章節標題交錯與寄語橫向循環
+========================= */
+
+    document.querySelectorAll('.section-label').forEach((label) => {
+        const chapterMatch = label.textContent.match(/\d+/);
+        if (!chapterMatch) return;
+
+        const chapterNumber = Number.parseInt(chapterMatch[0], 10);
+        if (chapterNumber < 3) return;
+
+        const section = label.closest('section');
+        const title = section
+            ? Array.from(section.querySelectorAll('h1, h2, h3')).find((heading) => (
+                Boolean(label.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING)
+            ))
+            : null;
+        const side = chapterNumber % 2 === 1 ? 'right' : 'left';
+
+        if (side === 'right') {
+            label.classList.add('chapter-heading-right');
+        }
+        if (title) {
+            title.classList.add('chapter-display-title', `chapter-heading-${side}`);
+        }
+    });
+
+    const messagesTrack = document.getElementById('messagesTrack');
+const messagesViewport = document.getElementById('messagesViewport');
+const messagesPrev = document.getElementById('messagesPrev');
+const messagesNext = document.getElementById('messagesNext');
+const messagesStatus = document.getElementById('messagesStatus');
+const messageCards = messagesTrack ? Array.from(messagesTrack.querySelectorAll('.message-card')) : [];
+const messageGroups = [];
+let currentMessageGroup = 0;
+    let isMessagesAnimating = false;
+    let messageGroupVersion = 0;
+let messageGroupAnimations = [];
+let messagesTouchStartX = 0;
+let messagesTouchStartY = 0;
+
+if (messagesTrack) {
+    for (let index = 0; index < messageCards.length; index += 4) {
+        const group = document.createElement('div');
+        const cards = messageCards.slice(index, index + 4);
+        group.className = 'message-group';
+        group.dataset.count = String(cards.length);
+        group.setAttribute('role', 'group');
+        cards.forEach(card => group.append(card));
+        messagesTrack.append(group);
+        messageGroups.push(group);
+    }
+}
+
+    function finishMessageGroup(targetIndex = currentMessageGroup) {
+        messageGroupVersion += 1;
+    messageGroupAnimations.forEach(animation => animation.cancel());
+    messageGroupAnimations = [];
+    currentMessageGroup = targetIndex;
+    messageGroups.forEach((group, index) => {
+        const active = index === targetIndex;
+        group.classList.toggle('is-current', active);
+        group.setAttribute('aria-hidden', String(!active));
+        group.inert = !active;
+        group.style.removeProperty('transform');
+            group.style.removeProperty('opacity');
+            group.style.removeProperty('position');
+    });
+    if (messagesStatus) {
+        messagesStatus.textContent = `第 ${targetIndex + 1} 組，共 ${messageGroups.length} 組`;
+    }
+    isMessagesAnimating = false;
+}
+
+async function moveMessageGroup(direction) {
+    if (messageGroups.length <= 1 || isMessagesAnimating) return;
+    const outgoingIndex = currentMessageGroup;
+    const incomingIndex = (outgoingIndex + direction + messageGroups.length) % messageGroups.length;
+    const outgoing = messageGroups[outgoingIndex];
+    const incoming = messageGroups[incomingIndex];
+
+    if (reducedMotion.matches || typeof incoming.animate !== 'function') {
+        finishMessageGroup(incomingIndex);
+        return;
+    }
+
+        isMessagesAnimating = true;
+        const transitionVersion = ++messageGroupVersion;
+    incoming.classList.add('is-current');
+    incoming.removeAttribute('aria-hidden');
+    incoming.inert = false;
+    const offset = direction > 0 ? 38 : -38;
+    messageGroupAnimations = [
+        outgoing.animate([
+            { opacity: 1, transform: 'translateX(0)' },
+            { opacity: 0, transform: `translateX(${-offset}px)` }
+        ], { duration: 520, easing: 'ease-in-out', fill: 'forwards' }),
+        incoming.animate([
+            { opacity: 0, transform: `translateX(${offset}px)` },
+            { opacity: 1, transform: 'translateX(0)' }
+        ], { duration: 620, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'forwards' })
+    ];
+
+    try {
+        await Promise.all(messageGroupAnimations.map(animation => animation.finished));
+    } catch {
+        // 快速切換或 reduced-motion 變更時，由 finishMessageGroup 統一復原。
+        } finally {
+            if (transitionVersion === messageGroupVersion) {
+                finishMessageGroup(incomingIndex);
+            }
+    }
+}
+
+if (messagesPrev && messagesNext && messagesViewport) {
+    const hasMultipleGroups = messageGroups.length > 1;
+    messagesPrev.hidden = !hasMultipleGroups;
+    messagesNext.hidden = !hasMultipleGroups;
+    messagesPrev.addEventListener('click', () => moveMessageGroup(-1));
+    messagesNext.addEventListener('click', () => moveMessageGroup(1));
+    messagesViewport.addEventListener('touchstart', event => {
+        messagesTouchStartX = event.changedTouches[0].clientX;
+        messagesTouchStartY = event.changedTouches[0].clientY;
+    }, { passive: true });
+    messagesViewport.addEventListener('touchend', event => {
+        const deltaX = event.changedTouches[0].clientX - messagesTouchStartX;
+        const deltaY = event.changedTouches[0].clientY - messagesTouchStartY;
+        if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY)) {
+            moveMessageGroup(deltaX < 0 ? 1 : -1);
+        }
+    }, { passive: true });
+    finishMessageGroup(0);
+}
+
+reducedMotion.addEventListener('change', () => {
+    if (isMessagesAnimating) finishMessageGroup(currentMessageGroup);
+});
 
 // 使用獨立的 scale 動畫，避免覆蓋箭頭本身的垂直定位。
 const buttonAnimations = new WeakMap();

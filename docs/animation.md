@@ -1,5 +1,11 @@
 # 動畫與互動
 
+## 寄語分組切換
+
+- 每四張寄語卡片形成一組，前後組使用約 520–620ms 的短距離水平淡移；首尾可循環，但不自動播放。
+- 快速操作由動畫鎖與版本檢查保護，觸控只在明確的水平滑動時換組。
+- prefers-reduced-motion 下取消位移並直接復原到最終狀態。
+
 最後核對：2026-10-06
 
 ## 動態原則
@@ -7,13 +13,14 @@
 - 整體安靜、柔和、稍慢，動態用來建立環境感與閱讀回饋，不用來模擬投影片換頁。
 - 不做頁面離場、整頁上移或強制 scroll snap；作品只在有邊界的橫向展廳內換作。
 - 內容顯現以原地透明度為主；動畫停用時幾何位置必須完全正確。
-- 快速 hover、捲動、選單操作與 reduced-motion 都不能留下過期狀態。
+- 自動輪轉、快速捲動、選單操作與 reduced-motion 都不能留下過期狀態。
 
 ## 現有動態
 
 | 功能 | 時序／行為 |
 | --- | --- |
 | 章節導覽 | 一般模式原生 smooth scroll；reduced-motion 立即定位 |
+| 展廳出口 | 一般模式淡化展廳後 smooth scroll；reduced-motion 立即定位 |
 | 作品舊圖淡出 | 860ms，原地交疊 |
 | 舊／新文案 | 240ms 淡出；延遲 180ms、560ms 淡入 |
 | 展廳背景換色 | CSS 0.8s |
@@ -23,6 +30,7 @@
 | 選單面板開／關 | 650ms |
 | 選單項目進場 | 800ms；延遲 150–750ms |
 | 節氣名稱淡入 | 760ms |
+| 節氣自動輪轉 | 每 2200ms 前進一節；指針啟動 520ms 後更新中央文字 |
 | 節氣敘述開始 | 延遲 420ms |
 | 節氣敘述逐字 | 每字 96ms |
 | 開場淡出 | 1100ms |
@@ -36,7 +44,7 @@
 - `updateGalleryFromScroll()` 將黏著區的捲動進度映射到 24 個索引；快速捲動時取消上一段動畫並直接追上新索引。
 - 作品換作由 `isAnimating`、`turnVersion` 與 `turnAnimations` 管理；取消後由 `finishPageTurn()` 重建唯一目前作品。
 - `cycleRotation` 累積正負 15 度，避免第 24 件回第 1 件時視覺倒轉。
-- 節氣預覽保留 `solarPreviewVersion`、`solarTypingTimer`、`solarHoverTimer`，防止快速滑動產生殘字。
+- 節氣輪轉保留 `solarPreviewVersion`、`solarAutoplayTimer`、`solarTypingTimer`、`solarHoverTimer`，防止重啟或頁籤切換後產生殘字。
 - 音樂保留 `musicRequest`，避免舊播放 promise 或淡入 frame 回寫新狀態。
 - 理時序裝飾使用單一 `requestAnimationFrame` 與 rest timer，不建立持續追蹤迴圈。
 
@@ -57,7 +65,7 @@
 
 - 頁面可自然上下捲動；作品區黏著與解除時沒有突然抽動。
 - 快速切換或 24→1 時，進度環、節氣名稱與唯一目前作品保持同步。
-- 快速 hover 不留下殘影或舊文字。
+- 自動切換或頁籤恢復時不留下殘影、舊文字或重複計時器。
 - 不用 transform 同時負責版面定位與多組動畫。
 - reduced-motion 保留完整功能與內容。
 

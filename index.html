@@ -75,12 +75,14 @@
 
     <header class="site-header">
         <button id="menuToggle" class="menu-toggle" type="button" aria-label="開啟導覽選單" aria-controls="siteMenu" aria-expanded="false" onclick="openMenu()">
-            <span></span><span></span><span></span>
+            <svg class="menu-emblem" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                <path class="menu-emblem-orbit" d="M24.8 9.1A10.8 10.8 0 1 0 26.6 18" />
+                <path class="menu-emblem-land" d="M8.7 20.4c2.4-1.2 3.8-3.7 5.6-5.4 1.1 1.9 2.2 3.2 3.6 4.2 1.3-1.5 2.5-2.4 4.7-3.3M9.6 23c3.8 1 8.2 1 12.3-.4" />
+                <path class="menu-emblem-leaf" d="M22.1 6.3c2.7.2 4 1.8 3.5 4.5-2.6-.1-4-1.7-3.5-4.5Z" />
+            </svg>
         </button>
         <span class="current-page-label" id="currentPageLabel">理時序</span>
-        <span class="site-section-index" aria-hidden="true">
-            <span id="currentSectionNumber">01</span><span class="site-section-divider">／</span><span>05</span>
-        </span>
+        <span class="site-rail-ornament" aria-hidden="true"></span>
         <button id="musicToggle" class="music-toggle" type="button" aria-label="播放背景音樂" hidden>音樂 / 播放</button>
         <span id="musicStatus" class="music-status" role="status"></span>
     </header>
@@ -96,6 +98,7 @@
                 <button class="nav-btn" type="button" data-page="gallery" onclick="navigateToSection('gallery')">觀芳華<span class="menu-arrow" aria-hidden="true"></span></button>
                 <button class="nav-btn" type="button" data-page="planning" onclick="navigateToSection('planning')">籌花事<span class="menu-arrow" aria-hidden="true"></span></button>
                 <button class="nav-btn" type="button" data-page="text" onclick="navigateToSection('text')">繪春信<span class="menu-arrow" aria-hidden="true"></span></button>
+                <button class="nav-btn" type="button" data-page="messages" onclick="navigateToSection('messages')">寄語<span class="menu-arrow" aria-hidden="true"></span></button>
                 <button class="nav-btn" type="button" data-page="thanks" onclick="navigateToSection('thanks')">謝花人<span class="menu-arrow" aria-hidden="true"></span></button>
             </nav>
             
@@ -108,7 +111,7 @@
             <div class="intro-layout">
                 <div class="intro-copy">
                     <p id="introSectionLabel" class="section-label">
-                        <span>01</span><span>理時序</span>
+                        <span>01</span><span>理時序</span><span class="section-label-line" aria-hidden="true"></span>
                     </p>
                     <h1 id="introTitle">四時流轉</h1>
                     <div class="intro-rule" aria-hidden="true"></div>
@@ -175,15 +178,9 @@
             <div class="gallery-sticky-shell">
                 <div class="gallery-section-heading">
                     <p id="galleryLabel" class="section-label">
-                        <span>02</span><span>觀芳華</span>
+                        <span>02</span><span>觀芳華</span><span class="section-label-line" aria-hidden="true"></span>
                     </p>
                     <h2 id="galleryTitle">作品展示</h2>
-                    <div class="gallery-heading-aside">
-                        <span class="gallery-range" aria-hidden="true">01—24</span>
-                        <button id="galleryExit" class="gallery-exit" type="button" onclick="leaveGallery()">
-                            續往籌花事
-                        </button>
-                    </div>
                 </div>
 
                 <div class="gallery-stage">
@@ -405,6 +402,11 @@
                     </svg>
                 </button>
                 </div>
+                <div class="gallery-exit-wrap">
+                    <button id="galleryExit" class="gallery-exit" type="button" onclick="leaveGallery()">
+                        前往籌花事
+                    </button>
+                </div>
             </div>
 
         </section>
@@ -413,7 +415,7 @@
         <section id="planning-page" class="page-content info-page" aria-labelledby="planningLabel planningTitle" tabindex="-1">
             <div class="text-container">
                 <p id="planningLabel" class="section-label">
-                    <span>03</span><span>籌花事</span>
+                    <span>03</span><span>籌花事</span><span class="section-label-line" aria-hidden="true"></span>
                 </p>
                 <h1 id="planningTitle">籌畫細節</h1>
                 <!-- 可在這裡加入企劃緣起、製作過程與參與名單。 -->
@@ -423,16 +425,70 @@
         <section id="text-page" class="page-content info-page" aria-labelledby="artistLabel artistTitle">
             <div class="text-container">
                 <p id="artistLabel" class="section-label">
-                    <span>04</span><span>繪春信</span>
+                    <span>04</span><span>繪春信</span><span class="section-label-line" aria-hidden="true"></span>
                 </p>
                 <h1 id="artistTitle">繪師資訊</h1>
                 <!-- 可在這裡補上繪師介紹、社群帳號與作品連結。 -->
             </div>
         </section>
+
+        <!-- 寄語：依實際參與人數增減 .message-card，不需要另外調整排版。 -->
+        <section id="messages-page" class="page-content messages-page" aria-labelledby="messagesLabel messagesTitle">
+            <div class="messages-container">
+                <header class="messages-heading">
+                    <p id="messagesLabel" class="section-label">
+                        <span>05</span><span>寄語</span><span class="section-label-line" aria-hidden="true"></span>
+                    </p>
+                    <h1 id="messagesTitle">寄語</h1>
+                </header>
+                <div class="messages-carousel">
+<button id="messagesPrev" class="messages-arrow messages-prev" type="button" aria-label="上一組寄語" hidden>
+                        <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                            <path d="M25 16H7M14 9l-7 7 7 7" />
+                        </svg>
+                    </button>
+<div id="messagesViewport" class="messages-viewport" role="region" aria-label="寄語輪播">
+                        <div id="messagesTrack" class="messages-track">
+                    <article class="message-card">
+                        <p>文字</p>
+                        <footer>署名</footer>
+                    </article>
+                    <article class="message-card">
+                        <p>文字</p>
+                        <footer>署名</footer>
+                    </article>
+                    <article class="message-card">
+                        <p>文字</p>
+                        <footer>署名</footer>
+                    </article>
+                    <article class="message-card">
+                        <p>文字</p>
+                        <footer>署名</footer>
+                    </article>
+                    <article class="message-card">
+                        <p>文字</p>
+                        <footer>署名</footer>
+                    </article>
+                    <article class="message-card">
+                        <p>文字</p>
+                        <footer>署名</footer>
+                    </article>
+                        </div>
+                    </div>
+<button id="messagesNext" class="messages-arrow messages-next" type="button" aria-label="下一組寄語" hidden>
+                        <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                            <path d="M7 16h18M18 9l7 7-7 7" />
+                        </svg>
+                    </button>
+                    <p id="messagesStatus" class="messages-status" role="status" aria-live="polite"></p>
+                </div>
+            </div>
+        </section>
+
         <section id="thanks-page" class="page-content info-page" aria-labelledby="thanksLabel thanksTitle">
             <div class="text-container">
                 <p id="thanksLabel" class="section-label">
-                    <span>05</span><span>謝花人</span>
+                    <span>06</span><span>謝花人</span><span class="section-label-line" aria-hidden="true"></span>
                 </p>
                 <h1 id="thanksTitle">委託名單</h1>
                 <!-- 原先放在繪春信頁的委託名單，之後可在此補上完整名單。 -->

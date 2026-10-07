@@ -7,14 +7,14 @@
 - 全站維持垂直長頁，但觀芳華是帶有捲動行程的黏著式橫向展廳。
 - 24 件作品使用前後切換並首尾相接；第 24 件向後會回到第 1 件，保留「流轉」核心。
 - 抵達觀芳華後，展廳會停留在視窗內；繼續向下捲動依序推進作品，完成第 24 件後解除固定並接回後續章節。
-- 章名旁常駐「續往籌花事」，可淡出展廳後直接前往下一章，不必強制走完整個黏著行程。
+- 展廳下方靠右常駐「前往籌花事」，可淡出展廳後直接前往下一章，不必強制走完整個黏著行程。
 - 展廳寬約 92vw、高約 72svh，有明確紙面邊界，不是滿版投影片。
 - 作品是主體；不用厚重畫框、3D 翻頁或快速跳轉索引。
 
 ## DOM 與狀態
 
 - `#gallery-page` 提供約 455–470svh 的捲動行程，內含黏著的 `.gallery-sticky-shell`。
-- `.gallery-sticky-shell` 包含章名 `.gallery-section-heading` 與 `.gallery-stage`。
+- `.gallery-sticky-shell` 包含章名 `.gallery-section-heading`、`.gallery-stage` 與下方出口 `.gallery-exit-wrap`。
 - 展廳內有前後箭頭、`.gallery-scroll-progress`、`.carousel-viewport` 與 24 個互相疊放的 `.slide-item`。
 - `currentIndex` 是目前作品索引；`finishPageTurn()` 確保只有目前作品可見、可互動，其他作品設為 `aria-hidden` 與 `inert`。
 - `isAnimating`、`turnVersion` 與 `turnAnimations` 防止連點與過期動畫回寫。
@@ -66,7 +66,7 @@
 - 展廳底色以 800ms 過渡。
 - reduced-motion 下立即完成換作與狀態整理。
 - reduced-motion 會取消長距離黏著行程，恢復一般章節高度，使用者仍可透過箭頭與滑動觀看作品。
-- 「續往籌花事」在一般模式先以 360ms 淡出展廳再立即定位；reduced-motion 下直接定位並把焦點交給下一章。
+- 「前往籌花事」在一般模式先以淡化展廳作為提示，再 smooth scroll 至下一章；reduced-motion 下直接定位並把焦點交給下一章。
 
 ## 圖片與文案現況
 
